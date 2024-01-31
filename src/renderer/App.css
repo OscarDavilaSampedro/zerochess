@@ -1,48 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Roboto:wght@100&display=swap');
 
 body {
   background: #161512 linear-gradient(to bottom, #2e2a24, #161512 116px);
+  font-family: 'Noto Sans', sans-serif;
   justify-content: center;
   align-items: center;
   position: relative;
   overflow-y: hidden;
-  /* color: #bababa; */
+  color: #bababa;
   display: flex;
   height: 100vh;
 }
 
-button {
-  background: linear-gradient(
-    to bottom,
-    hsl(37, 7%, 22%),
-    hsl(37, 5%, 19%) 100%
-  );
-}
-
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
-li {
-  list-style: none;
-}
-
-a {
-  text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
-}
-
-a:hover {
-  opacity: 1;
-  text-decoration: none;
-}
-
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
+h1 {
+  font-family: 'Roboto', sans-serif;
+  padding-bottom: 1em;
+  margin: 0em;
 }

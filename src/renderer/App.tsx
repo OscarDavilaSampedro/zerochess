@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
-import { Button, TextField, FormLabel, FormControl } from '@mui/material';
+import { Button, TextField, InputLabel, Stack } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
 import { useState } from 'react';
@@ -45,15 +45,16 @@ function Home() {
   };
 
   return (
-    <FormControl>
-      <FormLabel sx={{ m: '0.5em' }}>
-        Introduzca el nombre de usuario:
-      </FormLabel>
+    <Stack sx={{ backgroundColor: '#262421', padding: '2.5em 3.5em' }}>
+      <h1>Importar partidas:</h1>
+      <InputLabel sx={{ fontSize: '0.85em', paddingBottom: '0.5em' }}>
+        Nombre de usuario
+      </InputLabel>
       <TextField
         required
+        size="small"
         value={username}
-        sx={{ m: '0.5em' }}
-        label="Nombre de usuario"
+        sx={{ paddingBottom: '2.5em' }}
         error={emptyUsernameError || noGamesError}
         onChange={(e) => setUsername(e.target.value)}
         helperText={
@@ -64,10 +65,10 @@ function Home() {
             : ''
         }
       />
-      <Button onClick={handleSubmit} sx={{ m: '0.5em' }}>
+      <Button variant="contained" onClick={handleSubmit}>
         Importar partidas
       </Button>
-    </FormControl>
+    </Stack>
   );
 }
 
