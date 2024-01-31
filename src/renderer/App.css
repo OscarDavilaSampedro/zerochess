@@ -6,12 +6,8 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background: rgb(23, 32, 42);
-  background: linear-gradient(
-    90deg,
-    rgba(23, 32, 42, 1) 0%,
-    rgba(44, 62, 80, 1) 100%
-  );
+  /*background: rgb(22, 21, 18);*/
+  background: white;
   font-family: sans-serif;
   overflow-y: hidden;
   display: flex;
