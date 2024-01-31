@@ -1,10 +1,5 @@
-import {
-  MemoryRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from 'react-router-dom';
-import { Button, TextField, FormControl, FormLabel } from '@mui/material';
+import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
+import { Button, TextField, FormLabel, FormControl } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
 import { useState } from 'react';
@@ -14,47 +9,60 @@ import './App.css';
 function Home() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [usernameError, setUsernameError] = useState(false);
+  const [noGamesError, setNoGamesError] = useState(false);
+  const [emptyUsernameError, setEmptyUsernameError] = useState(false);
 
   function showUserGames() {
+    let games: JSON[] = [];
     const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
       headers: { Accept: 'application/x-ndjson' },
     });
-    let games: JSON[] = [];
 
     const onMessage = (game: JSON) => games.push(game);
-    const onComplete = () => navigate('/games');
+    const onComplete = () => {
+      if (games.length !== 0) {
+        navigate('/games');
+      } else {
+        setNoGamesError(true);
+      }
+    };
 
     stream
       .then(readStream(onMessage))
       .then(onComplete)
-      .catch((error) => {
-        console.error('Error: ', error.message);
-      });
+      .catch((error) => console.error('Error: ', error.message));
   }
 
   const handleSubmit = () => {
-    setUsernameError(false);
+    setNoGamesError(false);
+    setEmptyUsernameError(false);
 
-    if (username === '') {
-      setUsernameError(true);
-    } else {
+    if (username !== '') {
       showUserGames();
+    } else {
+      setEmptyUsernameError(true);
     }
   };
 
   return (
     <FormControl>
       <FormLabel sx={{ m: '0.5em' }}>
-        Introduzca el nombre de usuario:{' '}
+        Introduzca el nombre de usuario:
       </FormLabel>
       <TextField
         required
         value={username}
         sx={{ m: '0.5em' }}
-        error={usernameError}
         label="Nombre de usuario"
+        error={emptyUsernameError || noGamesError}
         onChange={(e) => setUsername(e.target.value)}
+        helperText={
+          emptyUsernameError
+            ? 'Debe introducir un nombre de usuario'
+            : noGamesError
+            ? 'El usuario seleccionado no tiene partidas'
+            : ''
+        }
       />
       <Button onClick={handleSubmit} sx={{ m: '0.5em' }}>
         Importar partidas
