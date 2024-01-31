@@ -1,11 +1,18 @@
+import {
+  MemoryRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from 'react-router-dom';
 import { Button, TextField, FormControl, FormLabel } from '@mui/material';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
 import { useState } from 'react';
+import { Games } from './Games';
 import './App.css';
 
 function Home() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState(false);
 
@@ -13,15 +20,16 @@ function Home() {
     const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
       headers: { Accept: 'application/x-ndjson' },
     });
+    let games: JSON[] = [];
 
-    const onMessage = (obj: any) => console.log(obj);
-    const onComplete = () => console.log('The stream has completed');
+    const onMessage = (game: JSON) => games.push(game);
+    const onComplete = () => navigate('/games');
 
     stream
       .then(readStream(onMessage))
       .then(onComplete)
       .catch((error) => {
-        console.error('Error: ', error);
+        console.error('Error: ', error.message);
       });
   }
 
@@ -70,6 +78,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/games" element={<Games />} />
         </Routes>
       </Router>
     </ThemeProvider>
