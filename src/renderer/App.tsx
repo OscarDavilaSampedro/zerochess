@@ -1,8 +1,9 @@
 import { Button, TextField, FormControl, FormLabel } from '@mui/material';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import React, { useState } from 'react';
-import './App.css';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
+import { useState } from 'react';
+import './App.css';
 
 function Home() {
   const [username, setUsername] = useState('');
@@ -36,27 +37,41 @@ function Home() {
 
   return (
     <FormControl>
-      <FormLabel>Introduzca el nombre de usuario: </FormLabel>
+      <FormLabel sx={{ m: '0.5em' }}>
+        Introduzca el nombre de usuario:{' '}
+      </FormLabel>
       <TextField
         required
         value={username}
+        sx={{ m: '0.5em' }}
         error={usernameError}
         label="Nombre de usuario"
         onChange={(e) => setUsername(e.target.value)}
       />
-      <Button variant="contained" onClick={handleSubmit}>
+      <Button onClick={handleSubmit} sx={{ m: '0.5em' }}>
         Importar partidas
       </Button>
     </FormControl>
   );
 }
 
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+  typography: {
+    fontFamily: `"Noto Sans", sans-serif`,
+  },
+});
+
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={darkTheme}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
