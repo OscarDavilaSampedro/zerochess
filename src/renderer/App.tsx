@@ -1,5 +1,5 @@
+import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/material';
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
-import { Button, TextField, Stack, Card, CircularProgress } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
 import { useState } from 'react';
@@ -57,11 +57,11 @@ function Home() {
   };
 
   return (
-    <div>
+    <Box>
       {loading ? (
         <CircularProgress color="secondary" />
       ) : (
-        <Card sx={{ padding: '2.5em 3.5em' }}>
+        <Paper sx={{ padding: '2.5em 3.5em' }}>
           <Stack spacing={5}>
             <h1>Importar partidas:</h1>
             <TextField
@@ -81,9 +81,9 @@ function Home() {
               Importar partidas
             </Button>
           </Stack>
-        </Card>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
 }
 
