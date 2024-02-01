@@ -59,7 +59,7 @@ function Home() {
   return (
     <Box>
       {loading ? (
-        <CircularProgress color="secondary" />
+        <CircularProgress />
       ) : (
         <Paper sx={{ padding: '2.5em 3.5em' }}>
           <Stack spacing={5}>
@@ -73,11 +73,7 @@ function Home() {
               label="Nombre de usuario"
               onChange={(e) => setUsername(e.target.value)}
             />
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleSubmit}
-            >
+            <Button variant="contained" onClick={handleSubmit}>
               Importar partidas
             </Button>
           </Stack>
@@ -91,7 +87,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#3c3934',
+      main: '#3f51b5',
     },
     secondary: {
       main: '#d64f00',
