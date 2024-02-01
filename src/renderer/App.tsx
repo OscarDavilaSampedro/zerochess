@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
-import { Button, TextField, InputLabel, Stack } from '@mui/material';
+import { Button, TextField, Stack, Card, CircularProgress } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
 import { useState } from 'react';
@@ -9,75 +9,106 @@ import './App.css';
 function Home() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [noGamesError, setNoGamesError] = useState(false);
-  const [emptyUsernameError, setEmptyUsernameError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [homeError, setHomeError] = useState(false);
+  const [homeHelperText, setHomeHelperText] = useState('');
 
   function showUserGames() {
-    let games: JSON[] = [];
+    setLoading(true);
+    const games: JSON[] = [];
     const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
       headers: { Accept: 'application/x-ndjson' },
     });
 
     const onMessage = (game: JSON) => games.push(game);
     const onComplete = () => {
+      setLoading(false);
+
       if (games.length !== 0) {
         navigate('/games');
       } else {
-        setNoGamesError(true);
+        setHomeError(true);
+        setHomeHelperText('No hay partidas para el usuario.');
       }
     };
 
     stream
       .then(readStream(onMessage))
       .then(onComplete)
-      .catch((error) => console.error('Error: ', error.message));
+      .catch((error) => {
+        console.error('Error: ', error.message);
+
+        setLoading(false);
+        setHomeError(true);
+        setHomeHelperText('El usuario introducido no existe.');
+      });
   }
 
   const handleSubmit = () => {
-    setNoGamesError(false);
-    setEmptyUsernameError(false);
+    setHomeError(false);
+    setHomeHelperText('');
 
     if (username !== '') {
       showUserGames();
     } else {
-      setEmptyUsernameError(true);
+      setHomeError(true);
+      setHomeHelperText('Ingrese un nombre de usuario.');
     }
   };
 
   return (
-    <Stack sx={{ backgroundColor: '#262421', padding: '2.5em 3.5em' }}>
-      <h1>Importar partidas:</h1>
-      <InputLabel sx={{ fontSize: '0.85em', paddingBottom: '0.5em' }}>
-        Nombre de usuario
-      </InputLabel>
-      <TextField
-        required
-        size="small"
-        value={username}
-        sx={{ paddingBottom: '2.5em' }}
-        error={emptyUsernameError || noGamesError}
-        onChange={(e) => setUsername(e.target.value)}
-        helperText={
-          emptyUsernameError
-            ? 'Debe introducir un nombre de usuario'
-            : noGamesError
-            ? 'El usuario seleccionado no tiene partidas'
-            : ''
-        }
-      />
-      <Button variant="contained" onClick={handleSubmit}>
-        Importar partidas
-      </Button>
-    </Stack>
+    <div>
+      {loading ? (
+        <CircularProgress color="secondary" />
+      ) : (
+        <Card sx={{ padding: '2.5em 3.5em' }}>
+          <Stack spacing={5}>
+            <h1>Importar partidas:</h1>
+            <TextField
+              required
+              size="small"
+              value={username}
+              error={homeError}
+              helperText={homeHelperText}
+              label="Nombre de usuario"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleSubmit}
+            >
+              Importar partidas
+            </Button>
+          </Stack>
+        </Card>
+      )}
+    </div>
   );
 }
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
+    primary: {
+      main: '#3c3934',
+    },
+    secondary: {
+      main: '#d64f00',
+    },
+    background: {
+      default: '#161512',
+      paper: '#262421',
+    },
+    text: {
+      primary: '#bababa',
+    },
+    error: {
+      main: '#cc3333',
+    },
   },
   typography: {
-    fontFamily: `"Noto Sans", sans-serif`,
+    fontFamily: '"Noto Sans", "Roboto", sans-serif',
   },
 });
 

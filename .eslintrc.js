@@ -14,6 +14,8 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     'no-console': 'off', // Temporalmente desactivado durante el desarrollo.
+    'import/order': 'off',
+    'prettier/prettier': 'off',
   },
   parserOptions: {
     ecmaVersion: 2022,
