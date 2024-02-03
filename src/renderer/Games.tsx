@@ -2,7 +2,43 @@
 import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useState } from 'react';
 
-export const Games = () => {
+export interface Game {
+  id: String;
+  perf: String;
+  speed: String;
+  moves: String;
+  rated: boolean;
+  status: String;
+  winner: String;
+  variant: String;
+  createdAt: number;
+  lastMoveAt: number;
+  clock: {
+    initial: number;
+    increment: number;
+    totalTime: number;
+  };
+  players: {
+    black: {
+      rating: boolean;
+      provisional: boolean;
+      user: {
+        id: String;
+        name: String;
+      };
+    };
+    white: {
+      rating: boolean;
+      provisional: boolean;
+      user: {
+        id: String;
+        name: String;
+      };
+    };
+  };
+}
+
+export const Games = ({ games }: { games: Game[] }) => {
   const [checked, setChecked] = useState([0]);
 
   const handleToggle = (value: number) => () => {
@@ -18,25 +54,36 @@ export const Games = () => {
     setChecked(newChecked);
   };
 
+  function gameToString(game: Game): String {
+    let nombreNegro = game.players.black.user?.name;
+    let nombreBlanco = game.players.white.user?.name;
+    let hora = new Date(game.createdAt).toLocaleTimeString();
+    let fecha = new Date(game.createdAt).toLocaleDateString();
+
+    return `${nombreNegro ? nombreNegro : 'Sin nombre'} vs. ${
+      nombreBlanco ? nombreBlanco : 'Sin nombre'
+    }, el ${fecha} a las ${hora}`;
+  }
+
   return (
     <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
       <List>
-        {Array.from(Array(30).keys()).map((value) => {
-          const labelId = `checkbox-list-label-${value}`;
+        {games.map((game, index) => {
+          const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <ListItem key={value}>
-              <ListItemButton onClick={handleToggle(value)}>
+            <ListItem key={index}>
+              <ListItemButton onClick={handleToggle(index)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
                     tabIndex={-1}
                     disableRipple
-                    checked={checked.indexOf(value) !== -1}
+                    checked={checked.indexOf(index) !== -1}
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+                <ListItemText id={labelId} primary={gameToString(game)} />
               </ListItemButton>
             </ListItem>
           );

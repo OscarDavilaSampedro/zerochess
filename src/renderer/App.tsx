@@ -2,11 +2,11 @@ import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/mat
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import readStream from '../utils/StreamUtil';
+import { Game, Games } from './Games';
 import { useState } from 'react';
-import { Games } from './Games';
 import './App.css';
 
-function Home() {
+function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,16 +15,17 @@ function Home() {
 
   function showUserGames() {
     setLoading(true);
-    const games: JSON[] = [];
+    const games: Game[] = [];
     const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
       headers: { Accept: 'application/x-ndjson' },
     });
 
-    const onMessage = (game: JSON) => games.push(game);
+    const onMessage = (game: Game) => games.push(game);
     const onComplete = () => {
       setLoading(false);
 
       if (games.length !== 0) {
+        onGamesUpdate(games);
         navigate('/games');
       } else {
         setHomeError(true);
@@ -109,12 +110,20 @@ const darkTheme = createTheme({
 });
 
 export default function App() {
+  const [games, setGames] = useState<Game[]>([]);
+  const handleGamesUpdate = (newGames: Game[]) => {
+    setGames(newGames);
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/games" element={<Games />} />
+          <Route
+            path="/"
+            element={<Home onGamesUpdate={handleGamesUpdate} />}
+          />
+          <Route path="/games" element={<Games games={games} />} />
         </Routes>
       </Router>
     </ThemeProvider>
