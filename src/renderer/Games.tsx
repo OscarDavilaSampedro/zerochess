@@ -1,42 +1,9 @@
 /* eslint-disable */
-import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Container } from '@mui/material';
+import { Chessboard } from 'react-chessboard';
+import { Game, Player } from '../interfaces';
 import { useState } from 'react';
-
-export interface Game {
-  id: String;
-  perf: String;
-  speed: String;
-  moves: String;
-  rated: boolean;
-  status: String;
-  winner: String;
-  variant: String;
-  createdAt: number;
-  lastMoveAt: number;
-  clock: {
-    initial: number;
-    increment: number;
-    totalTime: number;
-  };
-  players: {
-    black: {
-      rating: boolean;
-      provisional: boolean;
-      user: {
-        id: String;
-        name: String;
-      };
-    };
-    white: {
-      rating: boolean;
-      provisional: boolean;
-      user: {
-        id: String;
-        name: String;
-      };
-    };
-  };
-}
+import { Chess } from 'chess.js';
 
 export const Games = ({ games }: { games: Game[] }) => {
   const [checked, setChecked] = useState([0]);
@@ -54,15 +21,25 @@ export const Games = ({ games }: { games: Game[] }) => {
     setChecked(newChecked);
   };
 
-  function gameToString(game: Game): String {
-    let nombreNegro = game.players.black.user?.name;
-    let nombreBlanco = game.players.white.user?.name;
-    let hora = new Date(game.createdAt).toLocaleTimeString();
-    let fecha = new Date(game.createdAt).toLocaleDateString();
+  function parsePosition(moves: string) {
+    let chess = new Chess();
+    try {
+      chess.loadPgn(moves);
+    } catch (error: any) {
+      console.error('Error: ', error.message);
+    } finally {
+      return chess.fen();
+    }
+  }
 
-    return `${nombreNegro ? nombreNegro : 'Sin nombre'} vs. ${
-      nombreBlanco ? nombreBlanco : 'Sin nombre'
-    }, el ${fecha} a las ${hora}`;
+  function parsePlayerName(player: Player) {
+    if (player.aiLevel) {
+      return 'AI';
+    } else if (!player.user) {
+      return 'Anonymous';
+    } else {
+      return player.user.name;
+    }
   }
 
   return (
@@ -70,10 +47,16 @@ export const Games = ({ games }: { games: Game[] }) => {
       <List>
         {games.map((game, index) => {
           const labelId = `checkbox-list-label-${index}`;
+          console.log(typeof game.players.white);
 
           return (
             <ListItem key={index}>
               <ListItemButton onClick={handleToggle(index)}>
+                <Chessboard
+                  boardWidth={210}
+                  arePiecesDraggable={false}
+                  position={parsePosition(game.moves)}
+                />
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
@@ -83,7 +66,13 @@ export const Games = ({ games }: { games: Game[] }) => {
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={gameToString(game)} />
+                <Stack spacing={5}>
+                  <Container></Container>
+                  <Container>{`${parsePlayerName(
+                    game.players.black,
+                  )} vs. ${parsePlayerName(game.players.white)}`}</Container>
+                  <Container></Container>
+                </Stack>
               </ListItemButton>
             </ListItem>
           );

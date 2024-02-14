@@ -1,9 +1,10 @@
 import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/material';
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import readStream from '../utils/StreamUtil';
-import { Game, Games } from './Games';
+import { Game } from '../interfaces';
 import { useState } from 'react';
+import readStream from '../http';
+import { Games } from './Games';
 import './App.css';
 
 function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
@@ -25,6 +26,7 @@ function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
       setLoading(false);
 
       if (games.length !== 0) {
+        console.log(games);
         onGamesUpdate(games);
         navigate('/games');
       } else {
@@ -70,8 +72,8 @@ function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
               size="small"
               value={username}
               error={homeError}
-              helperText={homeHelperText}
               label="Nombre de usuario"
+              helperText={homeHelperText}
               onChange={(e) => setUsername(e.target.value)}
             />
             <Button variant="contained" onClick={handleSubmit}>
@@ -111,18 +113,12 @@ const darkTheme = createTheme({
 
 export default function App() {
   const [games, setGames] = useState<Game[]>([]);
-  const handleGamesUpdate = (newGames: Game[]) => {
-    setGames(newGames);
-  };
 
   return (
     <ThemeProvider theme={darkTheme}>
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={<Home onGamesUpdate={handleGamesUpdate} />}
-          />
+          <Route path="/" element={<Home onGamesUpdate={setGames} />} />
           <Route path="/games" element={<Games games={games} />} />
         </Routes>
       </Router>

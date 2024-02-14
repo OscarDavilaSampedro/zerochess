@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const readStream =
   (processLine: (data: any) => void) => (response: Response) => {
     const stream = response.body!.getReader();
