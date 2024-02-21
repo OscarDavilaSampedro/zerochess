@@ -1,3 +1,19 @@
+export interface Clock {
+  initial: number;
+  increment: number;
+  totalTime: number;
+}
+
+export interface Player {
+  aiLevel: number;
+  rating: boolean;
+  provisional: boolean;
+  user: {
+    id: string;
+    name: string;
+  };
+}
+
 export interface Game {
   id: string;
   clock: Clock;
@@ -13,21 +29,5 @@ export interface Game {
   players: {
     black: Player;
     white: Player;
-  };
-}
-
-export interface Clock {
-  initial: number;
-  increment: number;
-  totalTime: number;
-}
-
-export interface Player {
-  aiLevel: number;
-  rating: boolean;
-  provisional: boolean;
-  user: {
-    id: string;
-    name: string;
   };
 }
