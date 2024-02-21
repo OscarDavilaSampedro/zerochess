@@ -2,9 +2,9 @@ import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/mat
 import { Route, Routes, useNavigate, MemoryRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Game } from '../interfaces';
+import GamesView from './GamesView';
 import { useState } from 'react';
 import readStream from '../http';
-import { GamesView } from './GamesView';
 import './App.css';
 
 function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {

@@ -1,11 +1,10 @@
-/* eslint-disable */
-import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Container } from '@mui/material';
+import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, Stack, Container, ListItemText } from '@mui/material';
 import { Chessboard } from 'react-chessboard';
 import { Game, Player } from '../interfaces';
 import { useState } from 'react';
 import { Chess } from 'chess.js';
 
-export const GamesView = ({ games }: { games: Game[] }) => {
+export default function GamesView({ games }: { games: Game[] })  {
   const [checked, setChecked] = useState([0]);
 
   const handleToggle = (value: number) => () => {
@@ -22,24 +21,24 @@ export const GamesView = ({ games }: { games: Game[] }) => {
   };
 
   function parsePosition(moves: string) {
-    let chess = new Chess();
+    const chess = new Chess();
     try {
       chess.loadPgn(moves);
     } catch (e: unknown) {
       console.error(e as Error);
-    } finally {
-      return chess.fen();
     }
+
+    return chess.fen();
   }
 
   function parsePlayerName(player: Player) {
     if (player.aiLevel) {
       return 'AI';
-    } else if (!player.user) {
+    } if (!player.user) {
       return 'Anonymous';
-    } else {
-      return player.user.name;
     }
+    
+    return player.user.name;
   }
 
   return (
@@ -49,7 +48,7 @@ export const GamesView = ({ games }: { games: Game[] }) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <ListItem key={index}>
+            <ListItem key={game.id}>
               <ListItemButton onClick={handleToggle(index)}>
                 <Chessboard
                   boardWidth={210}
@@ -65,13 +64,15 @@ export const GamesView = ({ games }: { games: Game[] }) => {
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <Stack spacing={5}>
-                  <Container></Container>
-                  <Container>{`${parsePlayerName(
-                    game.players.black,
-                  )} vs. ${parsePlayerName(game.players.white)}`}</Container>
-                  <Container></Container>
-                </Stack>
+                <ListItemText>
+                  <Stack spacing={5}>
+                    <Container />
+                    <Container>{`${parsePlayerName(
+                      game.players.black,
+                    )} vs. ${parsePlayerName(game.players.white)}`}</Container>
+                    <Container />
+                  </Stack>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
           );
