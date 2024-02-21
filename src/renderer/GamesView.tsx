@@ -5,7 +5,7 @@ import { Game, Player } from '../interfaces';
 import { useState } from 'react';
 import { Chess } from 'chess.js';
 
-export const Games = ({ games }: { games: Game[] }) => {
+export const GamesView = ({ games }: { games: Game[] }) => {
   const [checked, setChecked] = useState([0]);
 
   const handleToggle = (value: number) => () => {
@@ -25,8 +25,8 @@ export const Games = ({ games }: { games: Game[] }) => {
     let chess = new Chess();
     try {
       chess.loadPgn(moves);
-    } catch (error: any) {
-      console.error('Error: ', error.message);
+    } catch (e: unknown) {
+      console.error(e as Error);
     } finally {
       return chess.fen();
     }
@@ -47,7 +47,6 @@ export const Games = ({ games }: { games: Game[] }) => {
       <List>
         {games.map((game, index) => {
           const labelId = `checkbox-list-label-${index}`;
-          console.log(typeof game.players.white);
 
           return (
             <ListItem key={index}>

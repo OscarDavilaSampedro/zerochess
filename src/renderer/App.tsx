@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Game } from '../interfaces';
 import { useState } from 'react';
 import readStream from '../http';
-import { Games } from './Games';
+import { GamesView } from './GamesView';
 import './App.css';
 
 function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
@@ -13,6 +13,11 @@ function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
   const [loading, setLoading] = useState(false);
   const [homeError, setHomeError] = useState(false);
   const [homeHelperText, setHomeHelperText] = useState('');
+
+  function showHomeError(isShown: boolean, text?: string) {
+    setHomeError(isShown);
+    setHomeHelperText(text || '');
+  }
 
   function showUserGames() {
     setLoading(true);
@@ -26,36 +31,29 @@ function Home({ onGamesUpdate }: { onGamesUpdate: (games: Game[]) => void }) {
       setLoading(false);
 
       if (games.length !== 0) {
-        console.log(games);
         onGamesUpdate(games);
         navigate('/games');
       } else {
-        setHomeError(true);
-        setHomeHelperText('No hay partidas para el usuario.');
+        showHomeError(true, 'No hay partidas para el usuario.');
       }
     };
 
     stream
       .then(readStream(onMessage))
       .then(onComplete)
-      .catch((error) => {
-        console.error('Error: ', error.message);
-
+      .catch(() => {
         setLoading(false);
-        setHomeError(true);
-        setHomeHelperText('El usuario introducido no existe.');
+        showHomeError(true, 'El usuario introducido no existe.');
       });
   }
 
   const handleSubmit = () => {
-    setHomeError(false);
-    setHomeHelperText('');
+    showHomeError(false);
 
     if (username !== '') {
       showUserGames();
     } else {
-      setHomeError(true);
-      setHomeHelperText('Ingrese un nombre de usuario.');
+      showHomeError(true, 'Ingrese un nombre de usuario.');
     }
   };
 
@@ -119,7 +117,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home onGamesUpdate={setGames} />} />
-          <Route path="/games" element={<Games games={games} />} />
+          <Route path="/games" element={<GamesView games={games} />} />
         </Routes>
       </Router>
     </ThemeProvider>
