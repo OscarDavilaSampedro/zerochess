@@ -1,7 +1,7 @@
 import { Paper, Checkbox, List, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText } from '@mui/material';
 import es from 'javascript-time-ago/locale/es.json';
-import { Chessboard } from 'react-chessboard';
 import { Clock, Game, Player } from '../interfaces';
+import { Chessboard } from 'react-chessboard';
 import Versus from '../../assets/versus.png';
 import ReactTimeAgo from 'react-time-ago';
 import TimeAgo from 'javascript-time-ago';
