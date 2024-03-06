@@ -66,9 +66,9 @@ export function handleGameStream(username: string): Promise<Game[]> {
   return new Promise((resolve, reject) => {
     const games: Game[] = [];
 
-    const onMessage = (game: Game) => games.push(game);
     const onComplete = () => resolve(games);
     const onError = (error: any) => reject(error);
+    const onMessage = (game: Game) => games.push(game);
 
     stream.then(readStream(onMessage)).then(onComplete).catch(onError);
   });

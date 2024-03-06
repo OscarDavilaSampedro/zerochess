@@ -34,7 +34,7 @@ export default function Home({
       })
       .catch(() => {
         setLoading(false);
-        showHomeError(true, 'Se ha producido un error al cargar las partidas.');
+        showHomeError(true, 'Hubo un error al cargar las partidas.');
       });
   }
 

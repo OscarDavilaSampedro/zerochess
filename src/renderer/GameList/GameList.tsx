@@ -57,7 +57,7 @@ export default function GameList({ games }: { games: Game[] }) {
       return 'Las blancas';
     }
       return 'Las negras';
-    
+
   }
 
   function parseGameStatus(winner: string, status: string) {
@@ -85,7 +85,7 @@ export default function GameList({ games }: { games: Game[] }) {
         return ` • Las negras ganan`;
       }
         return ' • Las blancas ganan';
-      
+
     }
 
     return '';
@@ -95,10 +95,9 @@ export default function GameList({ games }: { games: Game[] }) {
     const movesArray = moves.split(' ');
     let result = '';
 
-    let i = 0;
     let turn = 1;
-    for (; i < movesArray.length && turn < 4; i += 2, turn += 1) {
-      const secondMove = movesArray[i + 1] ? movesArray[i + 1]: '';
+    for (let i = 0; i < movesArray.length && turn < 4; i += 2, turn += 1) {
+      const secondMove = movesArray[i + 1] ? movesArray[i + 1] : '';
       result += `${turn}. ${movesArray[i]} ${secondMove} `;
     }
 
