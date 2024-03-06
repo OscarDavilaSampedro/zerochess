@@ -11,23 +11,3 @@ body {
   display: flex;
   height: 100vh;
 }
-
-p.variant,
-h1 {
-  font-family: 'Roboto', sans-serif;
-}
-
-p.variant {
-  font-size: 1.5em;
-  margin: 0em;
-}
-
-time,
-p.moves,
-p.status {
-  font-size: 0.75em;
-}
-
-p.status {
-  text-align: center;
-}

@@ -1,4 +1,33 @@
 import { Game } from './interfaces';
+import axios from 'axios';
+
+interface CheckResult {
+  exists: boolean;
+  hasGames: boolean;
+}
+
+interface LichessUserResponse {
+  count: {
+    all: number;
+  };
+}
+
+export async function checkPlayer(username: string): Promise<CheckResult> {
+  const LichessAPI = axios.create({
+    baseURL: 'https://lichess.org/api/user/',
+  });
+
+  try {
+    const response = await LichessAPI.get<LichessUserResponse>(username);
+
+    const exists = response.status === 200;
+    const hasGames = response.data.count.all !== 0;
+
+    return { exists, hasGames };
+  } catch (error) {
+    return { exists: false, hasGames: false };
+  }
+}
 
 const readStream =
   (processLine: (line: Game) => void) => (response: Response) => {
@@ -29,4 +58,18 @@ const readStream =
     return loop();
   };
 
-export default readStream;
+export function handleGameStream(username: string): Promise<Game[]> {
+  const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
+    headers: { Accept: 'application/x-ndjson' },
+  });
+
+  return new Promise((resolve, reject) => {
+    const games: Game[] = [];
+
+    const onMessage = (game: Game) => games.push(game);
+    const onComplete = () => resolve(games);
+    const onError = (error: any) => reject(error);
+
+    stream.then(readStream(onMessage)).then(onComplete).catch(onError);
+  });
+}

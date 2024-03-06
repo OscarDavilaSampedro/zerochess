@@ -20,6 +20,7 @@ export interface Game {
   perf: string;
   speed: string;
   moves: string;
+  source: string;
   rated: boolean;
   status: string;
   winner: string;
