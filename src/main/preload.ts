@@ -21,6 +21,9 @@ const electronHandler = {
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
+    getPath: () => ipcRenderer.invoke('engine:getPath'),
+    spawnChildProcess: (command: string, args: string[]) =>
+      ipcRenderer.invoke('engine:spawnChildProcess', command, args),
   },
 };
 

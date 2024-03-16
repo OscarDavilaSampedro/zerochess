@@ -32,3 +32,18 @@ export interface Game {
     white: Player;
   };
 }
+
+export interface Engine {
+  started: number;
+  loaded?: boolean;
+  ready?: boolean;
+  stream?: (data: string) => void;
+  send: (
+    cmd: string,
+    cb?: (response: string) => void,
+    stream?: (response: string) => void,
+  ) => void;
+  stop_moves: () => void;
+  get_cue_len: () => number;
+  quit: () => void;
+}
