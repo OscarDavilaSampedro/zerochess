@@ -77,6 +77,12 @@ const createWindow = async () => {
     },
   });
 
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    details.responseHeaders!['Cross-Origin-Opener-Policy'] = ['same-origin'];
+    details.responseHeaders!['Cross-Origin-Embedder-Policy'] = ['require-corp'];
+    callback({ responseHeaders: details.responseHeaders });
+});
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
