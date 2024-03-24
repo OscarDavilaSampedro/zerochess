@@ -9,6 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import getAllGames from './services/databaseService';
 import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from './util';
 import childProcess from 'child_process';
@@ -133,11 +134,14 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    ipcMain.handle('engine:getPath', async () => {
-      return path.join(__dirname, 'services/engine/stockfish.js');
+    ipcMain.handle('engine:joinPath', async (_, pathToJoin) => {
+      return path.join(__dirname, pathToJoin);
     });
     ipcMain.handle('engine:spawnChildProcess', async (_, command, args) => {
       return childProcess.spawn(command, args, { stdio: 'pipe' });
+    });
+    ipcMain.handle('database:getAllGames', async () => {
+      return getAllGames();
     });
     createWindow();
     app.on('activate', () => {

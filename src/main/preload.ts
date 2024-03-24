@@ -21,9 +21,11 @@ const electronHandler = {
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
-    getPath: () => ipcRenderer.invoke('engine:getPath'),
+    joinPath: (pathToJoin: string) =>
+      ipcRenderer.invoke('engine:joinPath', pathToJoin),
     spawnChildProcess: (command: string, args: string[]) =>
       ipcRenderer.invoke('engine:spawnChildProcess', command, args),
+    getAllGames: () => ipcRenderer.invoke('database:getAllGames'),
   },
 };
 
