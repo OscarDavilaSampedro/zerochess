@@ -1,9 +1,8 @@
-import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText } from '@mui/material';
+import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText} from '@mui/material';
 import { GameDecorator } from '../../interfaces';
 import Versus from '../../../assets/versus.png';
-import { Chessboard } from 'react-chessboard';
 import ReactTimeAgo from 'react-time-ago';
-import './GameList.css'
+import './GameList.css';
 
 export default function GameTile({
   game,
@@ -23,11 +22,11 @@ export default function GameTile({
     <ListItem key={rawGame.id}>
       <ListItemButton onClick={handleToggle(index)}>
         <ListItemIcon>
-          <Chessboard
+          {/*           <Chessboard
             boardWidth={210}
             arePiecesDraggable={false}
             position={game.parsePosition()}
-          />
+          /> */}
           <Checkbox
             edge="start"
             tabIndex={-1}

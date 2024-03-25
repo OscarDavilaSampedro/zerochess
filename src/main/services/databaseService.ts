@@ -15,7 +15,6 @@ function connectDatabase() {
 
 export function insertGames(games: Game[]) {
   const db = connectDatabase();
-
   const existsStm = db.prepare('SELECT id FROM game WHERE id = @id');
   const insertStm = db.prepare(`
     INSERT INTO game (
@@ -32,8 +31,9 @@ export function insertGames(games: Game[]) {
   `);
 
   games.forEach((game) => {
-    const result = existsStm.get({ id: game.id });
-    if (!result) {
+    const existingGame = existsStm.get({ id: game.id });
+
+    if (!existingGame) {
       const blackPlayer = game.players.black;
       const whitePlayer = game.players.white;
       insertStm.run({
@@ -71,10 +71,9 @@ export function insertGames(games: Game[]) {
 
 export function getPlayerGames(ownerID: string) {
   const db = connectDatabase();
-
   const stm = db.prepare('SELECT * FROM game WHERE owner_id = @ownerID');
-  const rows = stm.all({ ownerID });
 
+  const rows = stm.all({ ownerID });
   const games: Game[] = rows.map((row: any) => {
     return {
       id: row.id,
@@ -118,18 +117,17 @@ export function getPlayerGames(ownerID: string) {
   });
 
   db.close();
-
   return games;
 }
 
 export function getPlayerGamesCount(ownerID: string) {
   const db = connectDatabase();
-
   const stm = db.prepare(
     'SELECT COUNT(*) as count FROM game WHERE owner_id = @ownerID',
   );
-  const result = stm.get({ ownerID }) as CountResult;
-  db.close();
 
+  const result = stm.get({ ownerID }) as CountResult;
+
+  db.close();
   return result.count;
 }
