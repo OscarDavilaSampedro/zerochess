@@ -7,10 +7,7 @@ interface CountResult {
 }
 
 function connectDatabase() {
-  return Database(path.join(__dirname, '../../../release/app/database.db'), {
-    verbose: console.log,
-    fileMustExist: true,
-  });
+  return Database(path.join(__dirname, '../../../release/app/database.db'));
 }
 
 export function insertGames(games: Game[]) {

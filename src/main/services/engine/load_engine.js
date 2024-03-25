@@ -150,7 +150,7 @@ var load_engine = (function () {
         },
       },
       que = [],
-      eval_regex = /Total Evaluation[\s\S]+\n$/;
+      eval_regex = /Final Evaluation[\s\S]+\n$/;
 
     function determine_que_num(line, que) {
       var cmd_type,
