@@ -3,7 +3,7 @@ import axios from 'axios';
 
 interface CheckResult {
   exists: boolean;
-  hasGames: boolean;
+  gamesCount: number;
 }
 
 interface LichessUserResponse {
@@ -21,11 +21,11 @@ export async function checkPlayer(username: string): Promise<CheckResult> {
     const response = await LichessAPI.get<LichessUserResponse>(username);
 
     const exists = response.status === 200;
-    const hasGames = response.data.count.all !== 0;
+    const gamesCount = response.data.count.all;
 
-    return { exists, hasGames };
+    return { exists, gamesCount };
   } catch (error) {
-    return { exists: false, hasGames: false };
+    return { exists: false, gamesCount: 0 };
   }
 }
 
@@ -66,9 +66,12 @@ export function handleGameStream(username: string): Promise<Game[]> {
   return new Promise((resolve, reject) => {
     const games: Game[] = [];
 
-    const onComplete = () => resolve(games);
     const onError = (error: any) => reject(error);
-    const onMessage = (game: Game) => games.push(game);
+    const onComplete = () => resolve(games);
+    const onMessage = (game: Game) => {
+      game.ownerID = username;
+      games.push(game);
+    };
 
     stream.then(readStream(onMessage)).then(onComplete).catch(onError);
   });

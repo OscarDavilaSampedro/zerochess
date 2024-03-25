@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { Game } from '../interfaces';
 
 export type Channels = 'ipc-example';
 
@@ -25,7 +26,12 @@ const electronHandler = {
       ipcRenderer.invoke('engine:joinPath', pathToJoin),
     spawnChildProcess: (command: string, args: string[]) =>
       ipcRenderer.invoke('engine:spawnChildProcess', command, args),
-    getAllGames: () => ipcRenderer.invoke('database:getAllGames'),
+    insertGames: (games: Game[]) =>
+      ipcRenderer.invoke('database:insertGames', games),
+    getPlayerGames: (ownerID: string): Promise<Game[]> =>
+      ipcRenderer.invoke('database:getPlayerGames', ownerID),
+    getPlayerGamesCount: (ownerID: string): Promise<number> =>
+      ipcRenderer.invoke('database:getPlayerGamesCount', ownerID),
   },
 };
 

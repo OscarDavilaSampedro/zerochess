@@ -8,8 +8,12 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
+import {
+  getPlayerGames,
+  getPlayerGamesCount,
+  insertGames,
+} from './services/databaseService';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import getAllGames from './services/databaseService';
 import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from './util';
 import childProcess from 'child_process';
@@ -140,8 +144,14 @@ app
     ipcMain.handle('engine:spawnChildProcess', async (_, command, args) => {
       return childProcess.spawn(command, args, { stdio: 'pipe' });
     });
-    ipcMain.handle('database:getAllGames', async () => {
-      return getAllGames();
+    ipcMain.handle('database:insertGames', async (_, games) => {
+      insertGames(games);
+    });
+    ipcMain.handle('database:getPlayerGames', async (_, ownerID) => {
+      return getPlayerGames(ownerID);
+    });
+    ipcMain.handle('database:getPlayerGamesCount', async (_, ownerID) => {
+      return getPlayerGamesCount(ownerID);
     });
     createWindow();
     app.on('activate', () => {

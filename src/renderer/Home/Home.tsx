@@ -1,14 +1,14 @@
 import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/material';
 import { checkPlayer, handleGameStream } from '../../http';
+import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
-import { Game } from '../../interfaces';
 import { useState } from 'react';
 import './Home.css';
 
 export default function Home({
   onGamesUpdate,
 }: {
-  onGamesUpdate: (games: Game[]) => void;
+  onGamesUpdate: (games: GameDecorator[]) => void;
 }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -17,18 +17,22 @@ export default function Home({
   const [homeHelperText, setHomeHelperText] = useState('');
 
   function showHomeError(isShown: boolean, text?: string) {
-    setHomeError(isShown);
     setHomeHelperText(text || '');
+    setHomeError(isShown);
+    setLoading(false);
   }
 
-  function showUserGames() {
-    setLoading(true);
+  function showUserGames(games: GameDecorator[]) {
+    onGamesUpdate(games);
+    navigate('/games');
+    setLoading(false);
+  }
 
+  function retrieveNewGames() {
     handleGameStream(username)
       .then((games) => {
-        onGamesUpdate(games);
-        navigate('/games');
-        setLoading(false);
+        window.electron.ipcRenderer.insertGames(games);
+        showUserGames(games.map((game) => new GameDecorator(game)));
 
         return games;
       })
@@ -38,12 +42,32 @@ export default function Home({
       });
   }
 
+  async function retrieveOldGames() {
+    showUserGames(
+      (await window.electron.ipcRenderer.getPlayerGames(username)).map(
+        (game) => new GameDecorator(game),
+      ),
+    );
+  }
+
+  async function checkForNewGames(gamesCount: number) {
+    const gamesCountDB =
+      await window.electron.ipcRenderer.getPlayerGamesCount(username);
+    if (gamesCount !== gamesCountDB) {
+      retrieveNewGames();
+    } else {
+      await retrieveOldGames();
+    }
+  }
+
   async function verifyPlayer() {
+    setLoading(true);
+
     try {
-      const { exists, hasGames } = await checkPlayer(username);
+      const { exists, gamesCount } = await checkPlayer(username);
       if (exists) {
-        if (hasGames) {
-          showUserGames();
+        if (gamesCount !== 0) {
+          checkForNewGames(gamesCount);
         } else {
           showHomeError(true, 'El usuario no ha jugado partidas.');
         }

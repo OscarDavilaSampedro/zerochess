@@ -1,7 +1,7 @@
 import { Route, Routes, MemoryRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { GameDecorator } from '../interfaces';
 import GameList from './GameList/GameList';
-import { Game } from '../interfaces';
 import { useState } from 'react';
 import Home from './Home/Home';
 import './App.css';
@@ -32,7 +32,7 @@ const darkTheme = createTheme({
 });
 
 export default function App() {
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GameDecorator[]>([]);
 
   return (
     <ThemeProvider theme={darkTheme}>
