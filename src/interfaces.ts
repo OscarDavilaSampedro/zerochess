@@ -26,7 +26,6 @@ export interface Game {
   rated: boolean;
   status: string;
   winner: string;
-  ownerID: string;
   variant: string;
   createdAt: number;
   lastMoveAt: number;

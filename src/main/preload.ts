@@ -28,10 +28,10 @@ const electronHandler = {
       ipcRenderer.invoke('engine:spawnChildProcess', command, args),
     insertGames: (games: Game[]) =>
       ipcRenderer.invoke('database:insertGames', games),
-    getPlayerGames: (ownerID: string): Promise<Game[]> =>
-      ipcRenderer.invoke('database:getPlayerGames', ownerID),
-    getPlayerGamesCount: (ownerID: string): Promise<number> =>
-      ipcRenderer.invoke('database:getPlayerGamesCount', ownerID),
+    getPlayerGames: (id: string): Promise<Game[]> =>
+      ipcRenderer.invoke('database:getPlayerGames', id),
+    getPlayerGamesCount: (id: string): Promise<number> =>
+      ipcRenderer.invoke('database:getPlayerGamesCount', id),
   },
 };
 

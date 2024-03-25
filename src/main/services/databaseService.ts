@@ -18,13 +18,13 @@ export function insertGames(games: Game[]) {
   const existsStm = db.prepare('SELECT id FROM game WHERE id = @id');
   const insertStm = db.prepare(`
     INSERT INTO game (
-        id, initial, increment, totalTime, perf, speed, moves, source,
-        rated, status, winner, owner_id, variant, createdAt, lastMoveAt,
+        id, initial, increment, totalTime, perf, speed, moves,
+        source, rated, status, winner, variant, createdAt, lastMoveAt,
         black_aiLevel, black_rating, black_provisional, black_user_id, black_user_name,
         white_aiLevel, white_rating, white_provisional, white_user_id, white_user_name
     ) VALUES (
-        @id, @initial, @increment, @totalTime, @perf, @speed, @moves, @source,
-        @rated, @status, @winner, @ownerID, @variant, @createdAt, @lastMoveAt,
+        @id, @initial, @increment, @totalTime, @perf, @speed, @moves,
+        @source, @rated, @status, @winner, @variant, @createdAt, @lastMoveAt,
         @black_aiLevel, @black_rating, @black_provisional, @black_user_id, @black_user_name,
         @white_aiLevel, @white_rating, @white_provisional, @white_user_id, @white_user_name
     )
@@ -48,7 +48,6 @@ export function insertGames(games: Game[]) {
         rated: game.rated ? 1 : 0,
         status: game.status,
         winner: game.winner,
-        ownerID: game.ownerID,
         variant: game.variant,
         createdAt: game.createdAt,
         lastMoveAt: game.lastMoveAt,
@@ -69,11 +68,13 @@ export function insertGames(games: Game[]) {
   db.close();
 }
 
-export function getPlayerGames(ownerID: string) {
+export function getPlayerGames(id: string) {
   const db = connectDatabase();
-  const stm = db.prepare('SELECT * FROM game WHERE owner_id = @ownerID');
+  const stm = db.prepare(
+    'SELECT * FROM game WHERE black_user_id = @id or white_user_id = @id',
+  );
 
-  const rows = stm.all({ ownerID });
+  const rows = stm.all({ id });
   const games: Game[] = rows.map((row: any) => {
     return {
       id: row.id,
@@ -120,13 +121,13 @@ export function getPlayerGames(ownerID: string) {
   return games;
 }
 
-export function getPlayerGamesCount(ownerID: string) {
+export function getPlayerGamesCount(id: string) {
   const db = connectDatabase();
   const stm = db.prepare(
-    'SELECT COUNT(*) as count FROM game WHERE owner_id = @ownerID',
+    'SELECT COUNT(*) as count FROM game WHERE black_user_id = @id or white_user_id = @id',
   );
 
-  const result = stm.get({ ownerID }) as CountResult;
+  const result = stm.get({ id }) as CountResult;
 
   db.close();
   return result.count;
