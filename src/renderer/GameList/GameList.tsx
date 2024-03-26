@@ -1,11 +1,14 @@
+import { Paper, List, Button, Stack } from '@mui/material';
 import { GameDecorator } from '../../interfaces';
-import { Paper, List} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import GameTile from './GameTile';
 import { useState } from 'react';
-import './GameList.css'
+import './GameList.css';
 
 export default function GameList({ games }: { games: GameDecorator[] }) {
+  const [selectAll, setSelectAll] = useState(false);
   const [checked, setChecked] = useState([0]);
+  const navigate = useNavigate();
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -20,19 +23,59 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
     setChecked(newChecked);
   };
 
+  const handleToggleAll = () => {
+    if (selectAll) {
+      setChecked([]);
+    } else {
+      const allIndexes = games.map((_, index) => index);
+      setChecked(allIndexes);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSubmit = () => {
+    const gamesToAnalyse = games.filter((_game, index) =>
+      checked.includes(index),
+    );
+    console.log(gamesToAnalyse);
+  };
+
+  const handleBack = () => {
+    navigate('/');
+  };
+
   return (
-    <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
-      <List>
-        {games.map((game, index) => (
-          <GameTile
-            game={game}
-            index={index}
-            checked={checked}
-            key={game.getGame().id}
-            handleToggle={handleToggle}
-          />
-        ))}
-      </List>
+    <Paper sx={{ padding: '2.5em 3.5em' }}>
+      <Stack spacing={5}>
+        <Button variant="contained" onClick={handleToggleAll}>
+          Seleccionar todas
+        </Button>
+        <List style={{ maxHeight: '50vh', overflow: 'auto' }}>
+          {games.map((game, index) => (
+            <GameTile
+              game={game}
+              index={index}
+              checked={checked}
+              key={game.getGame().id}
+              totalGames={games.length}
+              handleToggle={handleToggle}
+            />
+          ))}
+        </List>
+        <Stack spacing={5} direction="row">
+          <Button fullWidth variant="contained" onClick={handleSubmit}>
+            Analizar
+          </Button>
+          <Button
+            fullWidth
+            color="secondary"
+            variant="contained"
+            onClick={handleBack}
+          >
+            Atrás
+          </Button>
+        </Stack>
+      </Stack>
     </Paper>
   );
 }
