@@ -33,7 +33,7 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
     setAllChecked(!allChecked);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const gamesToAnalyse = games.filter((_game, index) =>
       checked.includes(index),
     );
