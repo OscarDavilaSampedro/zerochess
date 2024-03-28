@@ -6,7 +6,7 @@ import { useState } from 'react';
 import './GameList.css';
 
 export default function GameList({ games }: { games: GameDecorator[] }) {
-  const [selectAll, setSelectAll] = useState(false);
+  const [allChecked, setAllChecked] = useState(false);
   const [checked, setChecked] = useState([0]);
   const navigate = useNavigate();
 
@@ -24,19 +24,20 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
   };
 
   const handleToggleAll = () => {
-    if (selectAll) {
+    if (allChecked) {
       setChecked([]);
     } else {
       const allIndexes = games.map((_, index) => index);
       setChecked(allIndexes);
     }
-    setSelectAll(!selectAll);
+    setAllChecked(!allChecked);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const gamesToAnalyse = games.filter((_game, index) =>
       checked.includes(index),
     );
+
     console.log(gamesToAnalyse);
   };
 

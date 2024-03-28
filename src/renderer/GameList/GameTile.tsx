@@ -1,7 +1,7 @@
 import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText} from '@mui/material';
-import ChessboardImage from '../../../assets/chessboard.png';
+import ChessboardImage from '../../../assets/images/chessboard.png';
+import Versus from '../../../assets/images/versus.png';
 import { GameDecorator } from '../../interfaces';
-import Versus from '../../../assets/versus.png';
 import { Chessboard } from 'react-chessboard';
 import ReactTimeAgo from 'react-time-ago';
 import './GameList.css';

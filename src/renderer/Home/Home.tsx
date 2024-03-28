@@ -36,10 +36,9 @@ export default function Home({
 
         return games;
       })
-      .catch(() => {
-        setLoading(false);
-        showHomeError(true, 'Hubo un error al cargar las partidas.');
-      });
+      .catch(() =>
+        showHomeError(true, 'Hubo un error al cargar las partidas.'),
+      );
   }
 
   async function retrieveOldGames() {

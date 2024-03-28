@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { getPlayerGames, getPlayerGamesCount, insertGames } from './services/databaseService';
+import { getPlayerGames, getPlayerGamesCount, insertGames } from './services/database/databaseService';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from './util';
@@ -69,12 +69,14 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    minWidth: 1024,
+    minHeight: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      webSecurity: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
-      webSecurity: false,
     },
   });
 
@@ -140,6 +142,7 @@ app
     ipcMain.handle('engine:spawnChildProcess', async (_, command, args) => {
       return childProcess.spawn(command, args, { stdio: 'pipe' });
     });
+
     ipcMain.handle('database:insertGames', async (_, games) => {
       insertGames(games);
     });
@@ -149,6 +152,7 @@ app
     ipcMain.handle('database:getPlayerGamesCount', async (_, id) => {
       return getPlayerGamesCount(id);
     });
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

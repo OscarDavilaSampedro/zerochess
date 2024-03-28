@@ -58,22 +58,26 @@ export class GameDecorator {
   }
 
   parsePosition(): string {
-    const { moves } = this.game;
     const chess = new Chess();
+
     try {
-      chess.loadPgn(moves);
+      chess.loadPgn(this.game.moves);
     } catch (e: unknown) {
       console.error(e as Error);
     }
+
     return chess.fen();
   }
 
   parseGameClock(): string {
     const { clock } = this.game;
+    let result = '∞';
+
     if (clock?.initial) {
-      return `${clock.initial / 60}+${clock.increment}`;
+      result = `${clock.initial / 60}+${clock.increment}`;
     }
-    return '∞';
+
+    return result;
   }
 
   parsePlayerName(playerStr: string): string {
@@ -94,15 +98,17 @@ export class GameDecorator {
   }
 
   private parseGameLoser(): string {
+    let result = 'Las negras';
+
     if (this.game.winner === 'black') {
-      return 'Las blancas';
+      result = 'Las blancas';
     }
-    return 'Las negras';
+
+    return result;
   }
 
   parseGameStatus(): string {
-    const { status } = this.game;
-    switch (status) {
+    switch (this.game.status) {
       case 'draw':
         return 'Tablas';
       case 'cheat':
@@ -122,18 +128,20 @@ export class GameDecorator {
 
   parseGameWinner(): string {
     const { winner, status } = this.game;
+    let result = '';
+
     if (status !== 'draw') {
       if (winner === 'black') {
-        return ` • Las negras ganan`;
+        result = ' • Las negras ganan';
       }
-      return ' • Las blancas ganan';
+      result = ' • Las blancas ganan';
     }
-    return '';
+
+    return result;
   }
 
   parseGameMoves(): string {
-    const { moves } = this.game;
-    const movesArray = moves.split(' ');
+    const movesArray = this.game.moves.split(' ');
     let result = '';
 
     let turn = 1;
