@@ -52,6 +52,13 @@ function calculateAccPercentage(wPBefore: number, wPAfter: number) {
   return accuracyPercentage;
 }
 
+function calculateAverage(values: number[]) {
+  const sum = values.reduce((total, num) => total + num, 0);
+  const average = sum / values.length;
+
+  return average;
+}
+
 export async function getAccuracy(moves: string[]) {
   const accuracyPerMove: (number | null)[] = [];
   let cpBefore = await getCentipawns();
@@ -76,10 +83,14 @@ export async function getAccuracy(moves: string[]) {
   }
 
   const whitePlayerAccuracy = accuracyPerMove.filter(
-    (_, index) => index % 2 === 0,
-  );
+    (acc, index) => index % 2 === 0 && acc !== null,
+  ) as number[];
+  const whitePlayerAverage = calculateAverage(whitePlayerAccuracy);
+
   const blackPlayerAccuracy = accuracyPerMove.filter(
-    (_, index) => index % 2 !== 0,
-  );
-  return { whitePlayerAccuracy, blackPlayerAccuracy };
+    (acc, index) => index % 2 !== 0 && acc !== null,
+  ) as number[];
+  const blackPlayerAverage = calculateAverage(blackPlayerAccuracy);
+
+  return { whitePlayerAverage, blackPlayerAverage };
 }
