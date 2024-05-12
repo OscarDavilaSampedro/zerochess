@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+import { connectEngine, getAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack } from '@mui/material';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +8,9 @@ import { useState } from 'react';
 import './GameList.css';
 
 export default function GameList({ games }: { games: GameDecorator[] }) {
+  const [gamesAnalysis, setGamesAnalysis] = useState<
+    Array<{ [key: string]: any }>
+  >(new Array(games.length).fill({}));
   const [allChecked, setAllChecked] = useState(false);
   const [checked, setChecked] = useState([0]);
   const navigate = useNavigate();
@@ -33,12 +38,35 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
     setAllChecked(!allChecked);
   };
 
-  const handleSubmit = () => {
-    const gamesToAnalyse = games.filter((_game, index) =>
-      checked.includes(index),
-    );
+  async function analyseGame(game: GameDecorator) {
+    const moves = game.getGameMoves();
 
-    console.log(gamesToAnalyse);
+    const advantage = await getGameAdvantage(moves);
+    const accuracy = await getAccuracy(moves);
+
+    return { advantage, accuracy };
+  }
+
+  async function analyseGames(
+    gamesToAnalyse: { game: GameDecorator; index: number }[],
+  ) {
+    const newGamesAnalysis = [...gamesAnalysis];
+    await connectEngine();
+
+    for (let i = 0; i < gamesToAnalyse.length; i += 1) {
+      const { game, index } = gamesToAnalyse[i];
+      newGamesAnalysis[index] = await analyseGame(game);
+    }
+
+    setGamesAnalysis(newGamesAnalysis);
+  }
+
+  const handleSubmit = async () => {
+    const gamesToAnalyse = games
+      .map((game, index) => ({ game, index }))
+      .filter(({ index }) => checked.includes(index));
+
+    await analyseGames(gamesToAnalyse);
   };
 
   const handleBack = () => {

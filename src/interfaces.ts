@@ -161,4 +161,8 @@ export class GameDecorator {
   getGame(): Game {
     return structuredClone(this.game);
   }
+
+  getGameMoves(): string[] {
+    return this.getGame().moves.split(' ');
+  }
 }

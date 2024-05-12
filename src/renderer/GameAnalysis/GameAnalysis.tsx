@@ -16,15 +16,8 @@ export default function GameAnalysis({
   );
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  function getGameMoves() {
-    const rawGame = selectedGame.getGame();
-    const moves = rawGame.moves.split(' ');
-
-    return moves;
-  }
-
   function replayMoves(index: number) {
-    const moves = getGameMoves();
+    const moves = selectedGame.getGameMoves();
     const chess = new Chess();
 
     for (let i = 0; i < index; i += 1) {
@@ -46,32 +39,42 @@ export default function GameAnalysis({
   };
 
   const handleNext = () => {
-    if (currentIndex < getGameMoves().length - 1) {
+    if (currentIndex < selectedGame.getGameMoves().length - 1) {
       replayMoves(currentIndex + 1);
     }
   };
 
   const handleTop = () => {
-    replayMoves(getGameMoves().length - 1);
+    replayMoves(selectedGame.getGameMoves().length - 1);
   };
 
   return (
     <Box>
       <Grid container>
-        <Grid item>
+        <Grid item xs={6}>
           <Chessboard
             position={boardPosition}
             arePiecesDraggable={false}
             customBoardStyle={{ width: '90em' }}
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={6}>
           <Paper />
         </Grid>
-        <Grid item>
-          <SparkLineChart data={[1, 4, 2, 5, 7, 2, 4, 6]} height={100} />
+        <Grid item xs={6}>
+          <SparkLineChart
+            area
+            showTooltip
+            height={100}
+            showHighlight
+            colors={['#FFAE80']}
+            data={[1, -4, 2, 5, 7, 2, 4, 6]}
+            valueFormatter={(v) => {
+              return `Ventaja: ${(v! < 0 ? '' : '+') + v}`;
+            }}
+          />
         </Grid>
-        <Grid item>
+        <Grid item xs={6}>
           <IconButton onClick={handleBottom}>
             <FastRewindRounded />
           </IconButton>

@@ -22,16 +22,22 @@ export async function connectEngine() {
   await send('setoption name Use NNUE value true');
 }
 
-function getCentipawns() {
+function getAdvantage() {
   return new Promise<number | null>((resolve) => {
     engine.send('eval', function onDone(data) {
       const evalRegex = /Final evaluation\s+([-+]?\d*\.\d+)/;
       const match = data.match(evalRegex);
 
-      const centipawns = match && match[1] ? parseFloat(match[1]) * 100 : null;
-      resolve(centipawns);
+      const advantage = match && match[1] ? parseFloat(match[1]) : null;
+      resolve(advantage);
     });
   });
+}
+
+async function getCentipawns() {
+  const advantage = await getAdvantage();
+
+  return advantage ? advantage * 100 : null;
 }
 
 function calculateWinPercentage(cp: number) {
@@ -93,4 +99,18 @@ export async function getAccuracy(moves: string[]) {
   const blackPlayerAverage = calculateAverage(blackPlayerAccuracy);
 
   return { whitePlayerAverage, blackPlayerAverage };
+}
+
+export async function getGameAdvantage(moves: string[]) {
+  const advantagePerMove: (number | null)[] = [];
+  const chess = new Chess();
+
+  for (let i = 0; i < moves.length; i += 1) {
+    chess.move(moves[i]);
+    await send(`position fen ${chess.fen()}`);
+
+    advantagePerMove.push(await getAdvantage());
+  }
+
+  return advantagePerMove;
 }
