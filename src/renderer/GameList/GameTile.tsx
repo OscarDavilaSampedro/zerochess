@@ -1,5 +1,4 @@
 import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText} from '@mui/material';
-import ChessboardImage from '../../../assets/images/chessboard.png';
 import Versus from '../../../assets/images/versus.png';
 import { GameDecorator } from '../../interfaces';
 import { Chessboard } from 'react-chessboard';
@@ -10,12 +9,10 @@ export default function GameTile({
   game,
   index,
   checked,
-  totalGames,
   handleToggle,
 }: {
   index: number;
   checked: number[];
-  totalGames: number;
   game: GameDecorator;
   handleToggle: (value: number) => () => void;
 }) {
@@ -26,19 +23,11 @@ export default function GameTile({
     <ListItem key={rawGame.id}>
       <ListItemButton onClick={handleToggle(index)}>
         <ListItemIcon>
-          {totalGames > 50 ? (
-            <img
-              alt=""
-              src={ChessboardImage}
-              style={{ width: 210, height: 210 }}
-            />
-          ) : (
-            <Chessboard
-              boardWidth={210}
-              arePiecesDraggable={false}
-              position={game.parsePosition()}
-            />
-          )}
+          <Chessboard
+            boardWidth={210}
+            arePiecesDraggable={false}
+            position={game.parsePosition()}
+          />
           <Checkbox
             edge="start"
             tabIndex={-1}
