@@ -30,13 +30,19 @@ export async function checkPlayer(username: string): Promise<CheckResult> {
 }
 
 const readStream =
-  (processLine: (line: Game) => void) => (response: Response) => {
+  (
+    processLine: (line: Game) => void,
+    updateProgress: (progress: number) => void,
+    totalGames: number,
+  ) =>
+  (response: Response) => {
     const stream = response.body!.getReader();
     const matcher = /\r?\n/;
     const decoder = new TextDecoder();
     let buf = '';
+    let processedGames = 0;
 
-    const loop = (): Promise<unknown> => // Uso del tipo 'unknown' en lugar de 'any'
+    const loop = (): Promise<unknown> =>
       stream.read().then(({ done, value }) => {
         if (done) {
           if (buf.length > 0) processLine(JSON.parse(buf));
@@ -48,17 +54,27 @@ const readStream =
 
           const parts = buf.split(matcher);
           buf = parts.pop()!;
-          parts.filter((p) => p).forEach((i) => processLine(JSON.parse(i)));
+          parts
+            .filter((p) => p)
+            .forEach((i) => {
+              processLine(JSON.parse(i));
+              processedGames += 1;
+              updateProgress((processedGames / totalGames) * 100);
+            });
           return loop();
         }
 
-        return null; // Se debe incluir un return dentro de una función then, incluso si la promesa no devuelve ningún valor
+        return null;
       });
 
     return loop();
   };
 
-export function handleGameStream(username: string): Promise<Game[]> {
+export function handleGameStream(
+  username: string,
+  updateProgress: (progress: number) => void,
+  totalGames: number,
+): Promise<Game[]> {
   const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
     headers: { Accept: 'application/x-ndjson' },
   });
@@ -70,6 +86,9 @@ export function handleGameStream(username: string): Promise<Game[]> {
     const onError = (error: any) => reject(error);
     const onComplete = () => resolve(games);
 
-    stream.then(readStream(onMessage)).then(onComplete).catch(onError);
+    stream
+      .then(readStream(onMessage, updateProgress, totalGames))
+      .then(onComplete)
+      .catch(onError);
   });
 }

@@ -1,4 +1,4 @@
-import { Button, TextField, Stack, CircularProgress, Box, Paper } from '@mui/material';
+import { Button, TextField, Stack, Box, Paper, LinearProgress, Typography } from '@mui/material';
 import { checkPlayer, handleGameStream } from '../../http';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -11,29 +11,33 @@ export default function Home({
   onGamesUpdate: (games: GameDecorator[]) => void;
 }) {
   const navigate = useNavigate();
+  const [progress, setProgress] = useState(0);
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [homeError, setHomeError] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [homeHelperText, setHomeHelperText] = useState('');
 
   function showHomeError(isShown: boolean, text?: string) {
     setHomeHelperText(text || '');
     setHomeError(isShown);
+    setDownloading(false);
     setLoading(false);
   }
 
   function showUserGames(games: GameDecorator[]) {
     onGamesUpdate(games);
     navigate('/games');
+
+    setDownloading(false);
     setLoading(false);
   }
 
-  function retrieveNewGames() {
-    handleGameStream(username)
+  function retrieveNewGames(totalGames: number) {
+    handleGameStream(username, setProgress, totalGames)
       .then((games) => {
         window.electron.ipcRenderer.insertGames(games);
         showUserGames(games.map((game) => new GameDecorator(game)));
-
         return games;
       })
       .catch(() =>
@@ -53,7 +57,8 @@ export default function Home({
     const gamesCountDB =
       await window.electron.ipcRenderer.getPlayerGamesCount(username);
     if (gamesCount !== gamesCountDB) {
-      retrieveNewGames();
+      setDownloading(true);
+      retrieveNewGames(gamesCount);
     } else {
       await retrieveOldGames();
     }
@@ -91,7 +96,23 @@ export default function Home({
   return (
     <Box>
       {loading ? (
-        <CircularProgress />
+        <Box sx={{ width: '25vw' }}>
+          {downloading ? (
+            <>
+              <p>Descargando partidas...</p>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ width: '100%', mr: 1 }}>
+                  <LinearProgress variant="determinate" value={progress} />
+                </Box>
+                <Box sx={{ minWidth: 35 }}>
+                  <Typography>{`${Math.round(progress)}%`}</Typography>
+                </Box>
+              </Box>
+            </>
+          ) : (
+            <LinearProgress />
+          )}
+        </Box>
       ) : (
         <Paper sx={{ padding: '2.5em 3.5em' }}>
           <Stack spacing={5}>
