@@ -1,4 +1,4 @@
-import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText} from '@mui/material';
+import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText } from '@mui/material';
 import Versus from '../../../assets/images/versus.png';
 import { GameDecorator } from '../../interfaces';
 import { Chessboard } from 'react-chessboard';
@@ -9,9 +9,11 @@ export default function GameTile({
   game,
   index,
   checked,
+  username,
   handleToggle,
 }: {
   index: number;
+  username: string;
   checked: number[];
   game: GameDecorator;
   handleToggle: (value: number) => () => void;
@@ -27,6 +29,7 @@ export default function GameTile({
             boardWidth={210}
             arePiecesDraggable={false}
             position={game.parsePosition()}
+            boardOrientation={game.getOrientation(username)}
           />
           <Checkbox
             edge="start"
@@ -52,11 +55,13 @@ export default function GameTile({
                 alignItems="center"
                 justifyContent="center"
               >
-                <p>{game.parsePlayerName('black')}</p>
-                <img src={Versus} alt="" />
                 <p>{game.parsePlayerName('white')}</p>
+                <img src={Versus} alt="" />
+                <p>{game.parsePlayerName('black')}</p>
               </Stack>
-              <p className="status">{`${game.parseGameStatus()} ${game.parseGameWinner()}`}</p>
+              <p
+                className={`status ${game.getStatusColor(username)}`}
+              >{`${game.parseGameStatus()} ${game.parseGameWinner()}`}</p>
             </Stack>
             <p className="moves">{game.parseGameMoves()}</p>
           </Stack>

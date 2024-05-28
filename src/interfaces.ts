@@ -131,10 +131,11 @@ export class GameDecorator {
     let result = '';
 
     if (status !== 'draw') {
+      result = ' • Las blancas ganan';
+
       if (winner === 'black') {
         result = ' • Las negras ganan';
       }
-      result = ' • Las blancas ganan';
     }
 
     return result;
@@ -164,5 +165,18 @@ export class GameDecorator {
 
   getGameMoves(): string[] {
     return this.getGame().moves.split(' ');
+  }
+
+  getOrientation(id: string) {
+    return this.game.players.black.user?.id === id ? 'black' : 'white';
+  }
+
+  getStatusColor(id: string) {
+    const { winner, status } = this.game;
+    if (status === 'draw') {
+      return '';
+    }
+
+    return winner === this.getOrientation(id) ? 'winner' : 'loser';
   }
 }

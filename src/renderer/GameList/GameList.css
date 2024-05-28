@@ -13,3 +13,11 @@ p.status {
 p.status {
   text-align: center;
 }
+
+p.winner {
+  color: #629924;
+}
+
+p.loser {
+  color: #c33;
+}

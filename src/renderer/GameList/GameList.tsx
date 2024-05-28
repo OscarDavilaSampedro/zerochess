@@ -8,7 +8,13 @@ import GameTile from './GameTile';
 import './GameList.css';
 
 const GAMES_PER_PAGE = 10;
-export default function GameList({ games }: { games: GameDecorator[] }) {
+export default function GameList({
+  games,
+  username,
+}: {
+  games: GameDecorator[];
+  username: string;
+}) {
   const [gamesAnalysis, setGamesAnalysis] = useState<
     Array<{ [key: string]: any }>
   >(new Array(games.length).fill({}));
@@ -16,6 +22,16 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
   const [allChecked, setAllChecked] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+
+  const handleToggleAll = () => {
+    if (allChecked) {
+      setChecked([]);
+    } else {
+      const allIndexes = games.map((_, index) => index);
+      setChecked(allIndexes);
+    }
+    setAllChecked(!allChecked);
+  };
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -30,14 +46,14 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
     setChecked(newChecked);
   };
 
-  const handleToggleAll = () => {
-    if (allChecked) {
-      setChecked([]);
-    } else {
-      const allIndexes = games.map((_, index) => index);
-      setChecked(allIndexes);
-    }
-    setAllChecked(!allChecked);
+  const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
+  const endIndex = Math.min(startIndex + GAMES_PER_PAGE, games.length);
+
+  const currentGames = games.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(games.length / GAMES_PER_PAGE);
+
+  const handlePageChange = (_event: ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
   };
 
   async function analyseGame(game: GameDecorator) {
@@ -75,21 +91,8 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
     navigate('/');
   };
 
-  const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
-  const endIndex = Math.min(startIndex + GAMES_PER_PAGE, games.length);
-
-  const currentGames = games.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(games.length / GAMES_PER_PAGE);
-
-  const handlePageChange = (
-    _event: ChangeEvent<unknown>,
-    page: number,
-  ) => {
-    setCurrentPage(page);
-  };
-
   return (
-    <Paper sx={{ padding: '2.5em 3.5em' }}>
+    <Paper sx={{ padding: '2.5em 3.5em', minWidth: '40vw' }}>
       <Stack spacing={5}>
         <Button variant="contained" onClick={handleToggleAll}>
           Seleccionar todas
@@ -99,20 +102,20 @@ export default function GameList({ games }: { games: GameDecorator[] }) {
             <GameTile
               game={game}
               checked={checked}
+              username={username}
               key={game.getGame().id}
               index={startIndex + index}
               handleToggle={handleToggle}
             />
           ))}
         </List>
-        <Stack spacing={5} direction="row" justifyContent="center">
-          <Pagination
-            showLastButton
-            showFirstButton
-            count={totalPages}
-            onChange={handlePageChange}
-          />
-        </Stack>
+        <Pagination
+          showLastButton
+          showFirstButton
+          count={totalPages}
+          onChange={handlePageChange}
+          sx={{ alignSelf: 'center' }}
+        />
         <Stack spacing={5} direction="row">
           <Button fullWidth variant="contained" onClick={handleSubmit}>
             Analizar

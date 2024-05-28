@@ -33,13 +33,26 @@ const darkTheme = createTheme({
 
 export default function App() {
   const [games, setGames] = useState<GameDecorator[]>([]);
+  const [username, setUsername] = useState('');
 
   return (
     <ThemeProvider theme={darkTheme}>
       <Router>
         <Routes>
-          <Route path="/" element={<Home onGamesUpdate={setGames} />} />
-          <Route path="/games" element={<GameList games={games} />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                username={username}
+                onGamesUpdate={setGames}
+                onUsernameUpdate={setUsername}
+              />
+            }
+          />
+          <Route
+            path="/games"
+            element={<GameList games={games} username={username} />}
+          />
         </Routes>
       </Router>
     </ThemeProvider>

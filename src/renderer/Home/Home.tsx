@@ -6,13 +6,16 @@ import { useState } from 'react';
 import './Home.css';
 
 export default function Home({
+  username,
   onGamesUpdate,
+  onUsernameUpdate,
 }: {
+  username: string;
+  onUsernameUpdate: (username: string) => void;
   onGamesUpdate: (games: GameDecorator[]) => void;
 }) {
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
-  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [homeError, setHomeError] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -26,7 +29,10 @@ export default function Home({
   }
 
   function showUserGames(games: GameDecorator[]) {
-    onGamesUpdate(games);
+    const legalGames = games.filter(
+      (g) => g.getGame().variant !== 'fromPosition',
+    );
+    onGamesUpdate(legalGames);
     navigate('/games');
 
     setDownloading(false);
@@ -120,11 +126,10 @@ export default function Home({
             <TextField
               required
               size="small"
-              value={username}
               error={homeError}
               label="Nombre de usuario"
               helperText={homeHelperText}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => onUsernameUpdate(e.target.value)}
             />
             <Button variant="contained" onClick={handleSubmit}>
               Importar partidas
