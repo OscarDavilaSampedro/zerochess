@@ -1,9 +1,15 @@
-import { FastForwardRounded, FastRewindRounded, SkipNextRounded, SkipPreviousRounded } from '@mui/icons-material';
+import {
+  FastForwardRounded,
+  FastRewindRounded,
+  SkipNextRounded,
+  SkipPreviousRounded,
+} from '@mui/icons-material';
 import { Box, Grid, IconButton, Paper } from '@mui/material';
 import { GameDecorator } from '../../interfaces';
 import { SparkLineChart } from '@mui/x-charts';
 import { useLocation } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
+import MoveTable from './MoveTable';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
 
@@ -11,9 +17,12 @@ export default function GameAnalysis() {
   const [boardPosition, setBoardPosition] = useState(
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
   );
-  const location = useLocation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { game } = location.state as { game: GameDecorator };
+  const { username, game, analysis } = useLocation().state as {
+    analysis: { [key: string]: any };
+    game: GameDecorator;
+    username: string;
+  };
 
   function replayMoves(index: number) {
     const moves = game.getGameMoves();
@@ -38,42 +47,54 @@ export default function GameAnalysis() {
   };
 
   const handleNext = () => {
-    if (currentIndex < game.getGameMoves().length - 1) {
+    if (currentIndex < game.getGameMoves().length) {
       replayMoves(currentIndex + 1);
     }
   };
 
   const handleTop = () => {
-    replayMoves(game.getGameMoves().length - 1);
+    replayMoves(game.getGameMoves().length);
   };
 
   return (
     <Box>
-      <Grid container>
-        <Grid item xs={6}>
-          <Chessboard
-            position={boardPosition}
-            arePiecesDraggable={false}
-            customBoardStyle={{ width: '90em' }}
-          />
+      <Grid container spacing={5}>
+        <Grid item xs={8}>
+          <div style={{ width: '500px' }}>
+            <Chessboard
+              position={boardPosition}
+              arePiecesDraggable={false}
+              customBoardStyle={{ borderRadius: '5px' }}
+              boardOrientation={game.getOrientation(username)}
+            />
+          </div>
         </Grid>
-        <Grid item xs={6}>
-          <Paper />
+        <Grid item xs={4}>
+          <Paper>
+            <MoveTable
+              moves={game.getGameMoves()}
+              currentIndex={currentIndex}
+              advantage={analysis.advantage}
+            />
+          </Paper>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={8}>
           <SparkLineChart
             area
             showTooltip
-            height={100}
+            width={500}
+            height={240}
             showHighlight
             colors={['#FFAE80']}
-            data={[1, -4, 2, 5, 7, 2, 4, 6]}
+            data={analysis.advantage}
             valueFormatter={(v) => {
-              return `Ventaja: ${(v! < 0 ? '' : '+') + v}`;
+              return v
+                ? `Ventaja: ${(v! < 0 ? '' : '+') + v}`
+                : 'Ventaja desconocida';
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <IconButton onClick={handleBottom}>
             <FastRewindRounded />
           </IconButton>

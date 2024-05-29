@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { connectEngine, getAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
-import { Paper, List, Button, Stack, Pagination } from '@mui/material';
+import { Paper, List, Button, Stack, Pagination, Box } from '@mui/material';
 import LinearProgressWithLabel from '../LinearProgressWithLabel';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -124,55 +124,57 @@ export default function GameList({
   };
 
   return (
-    <Paper sx={{ padding: '2.5em 3.5em', minWidth: '40vw' }}>
+    <Box>
       {loading ? (
-        <>
+        <Box sx={{ width: '25vw' }}>
           <p>
             Analizando partidas...
             {estimatedTime ? ` (Tiempo estimado: ${estimatedTime})` : ''}
           </p>
           <LinearProgressWithLabel progress={progress} />
-        </>
+        </Box>
       ) : (
-        <Stack spacing={5}>
-          <Button variant="contained" onClick={handleToggleAll}>
-            Seleccionar todas
-          </Button>
-          <List style={{ maxHeight: '50vh', overflow: 'auto' }}>
-            {currentGames.map((game, index) => (
-              <GameTile
-                game={game}
-                checked={checked}
-                username={username}
-                key={game.getGame().id}
-                index={startIndex + index}
-                handleToggle={handleToggle}
-                isAnalysed={gamesAnalysis[startIndex + index] !== null}
-              />
-            ))}
-          </List>
-          <Pagination
-            showLastButton
-            showFirstButton
-            count={totalPages}
-            onChange={handlePageChange}
-            sx={{ alignSelf: 'center' }}
-          />
-          <Stack spacing={5} direction="row">
-            <Button fullWidth variant="contained" onClick={handleSubmit}>
-              Analizar
+        <Paper sx={{ padding: '2.5em 3.5em', minWidth: '40vw' }}>
+          <Stack spacing={5}>
+            <Button variant="contained" onClick={handleToggleAll}>
+              Seleccionar todas
             </Button>
-            <Button
-              fullWidth
-              color="secondary"
-              variant="contained"
-              onClick={handleBack}
-            >
-              Atrás
-            </Button>
+            <List sx={{ maxHeight: '50vh', overflow: 'auto' }}>
+              {currentGames.map((game, index) => (
+                <GameTile
+                  game={game}
+                  checked={checked}
+                  username={username}
+                  key={game.getGame().id}
+                  index={startIndex + index}
+                  handleToggle={handleToggle}
+                  analysis={gamesAnalysis[startIndex + index]}
+                />
+              ))}
+            </List>
+            <Pagination
+              showLastButton
+              showFirstButton
+              count={totalPages}
+              onChange={handlePageChange}
+              sx={{ alignSelf: 'center' }}
+            />
+            <Stack spacing={5} direction="row">
+              <Button fullWidth variant="contained" onClick={handleSubmit}>
+                Analizar
+              </Button>
+              <Button
+                fullWidth
+                color="secondary"
+                variant="contained"
+                onClick={handleBack}
+              >
+                Atrás
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
+        </Paper>
       )}
-    </Paper>
+    </Box>
   );
 }

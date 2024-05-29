@@ -12,14 +12,14 @@ export default function GameTile({
   index,
   checked,
   username,
-  isAnalysed,
+  analysis,
   handleToggle,
 }: {
   index: number;
   username: string;
   checked: number[];
   game: GameDecorator;
-  isAnalysed: boolean;
+  analysis: { [key: string]: any };
   handleToggle: (value: number) => () => void;
 }) {
   const navigate = useNavigate();
@@ -27,8 +27,8 @@ export default function GameTile({
   const labelId = `checkbox-list-label-${rawGame.id}`;
 
   const handleClick = () => {
-    if (isAnalysed) {
-      navigate('/analysis', { state: { game } });
+    if (analysis) {
+      navigate('/analysis', { state: { username, game, analysis } });
     } else {
       handleToggle(index)();
     }
@@ -42,11 +42,15 @@ export default function GameTile({
             boardWidth={210}
             arePiecesDraggable={false}
             position={game.parsePosition()}
+            customBoardStyle={{ borderRadius: '5px' }}
             boardOrientation={game.getOrientation(username)}
           />
-          {isAnalysed ? (
+          {analysis ? (
             <IconButton
-              sx={{ margin: '0 1em 0' }}
+              sx={{
+                margin: '0 1em 0',
+                '&:hover': { backgroundColor: 'transparent' },
+              }}
             >
               <DoneIcon />
             </IconButton>
@@ -66,7 +70,7 @@ export default function GameTile({
           <Stack spacing={5}>
             <Stack spacing={0}>
               <p className="variant">{`${game.parseGameClock()} • ${rawGame.perf.toUpperCase()} • ${
-                rawGame.rated ? 'RATED' : 'CASUAL'
+                rawGame.rated ? 'POR PUNTOS' : 'AMISTOSA'
               }`}</p>
               <ReactTimeAgo date={rawGame.createdAt} locale="es" />
             </Stack>
