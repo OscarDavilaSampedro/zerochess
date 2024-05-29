@@ -1,4 +1,5 @@
-import { Button, TextField, Stack, Box, Paper, LinearProgress, Typography } from '@mui/material';
+import { Button, TextField, Stack, Box, Paper, LinearProgress } from '@mui/material';
+import LinearProgressWithLabel from '../LinearProgressWithLabel';
 import { checkPlayer, handleGameStream } from '../../http';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -106,14 +107,7 @@ export default function Home({
           {downloading ? (
             <>
               <p>Descargando partidas...</p>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Box sx={{ width: '100%', mr: 1 }}>
-                  <LinearProgress variant="determinate" value={progress} />
-                </Box>
-                <Box sx={{ minWidth: 35 }}>
-                  <Typography>{`${Math.round(progress)}%`}</Typography>
-                </Box>
-              </Box>
+              <LinearProgressWithLabel progress={progress} />
             </>
           ) : (
             <LinearProgress />

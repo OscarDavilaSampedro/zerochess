@@ -2,22 +2,21 @@ import { FastForwardRounded, FastRewindRounded, SkipNextRounded, SkipPreviousRou
 import { Box, Grid, IconButton, Paper } from '@mui/material';
 import { GameDecorator } from '../../interfaces';
 import { SparkLineChart } from '@mui/x-charts';
+import { useLocation } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
 
-export default function GameAnalysis({
-  selectedGame,
-}: {
-  selectedGame: GameDecorator;
-}) {
+export default function GameAnalysis() {
   const [boardPosition, setBoardPosition] = useState(
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
   );
+  const location = useLocation();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { game } = location.state as { game: GameDecorator };
 
   function replayMoves(index: number) {
-    const moves = selectedGame.getGameMoves();
+    const moves = game.getGameMoves();
     const chess = new Chess();
 
     for (let i = 0; i < index; i += 1) {
@@ -39,13 +38,13 @@ export default function GameAnalysis({
   };
 
   const handleNext = () => {
-    if (currentIndex < selectedGame.getGameMoves().length - 1) {
+    if (currentIndex < game.getGameMoves().length - 1) {
       replayMoves(currentIndex + 1);
     }
   };
 
   const handleTop = () => {
-    replayMoves(selectedGame.getGameMoves().length - 1);
+    replayMoves(game.getGameMoves().length - 1);
   };
 
   return (

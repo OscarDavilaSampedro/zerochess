@@ -1,6 +1,8 @@
-import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText } from '@mui/material';
+import { Checkbox, ListItem, ListItemButton, ListItemIcon, Stack, ListItemText, IconButton } from '@mui/material';
 import Versus from '../../../assets/images/versus.png';
 import { GameDecorator } from '../../interfaces';
+import DoneIcon from '@mui/icons-material/Done';
+import { useNavigate } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
 import ReactTimeAgo from 'react-time-ago';
 import './GameList.css';
@@ -10,20 +12,31 @@ export default function GameTile({
   index,
   checked,
   username,
+  isAnalysed,
   handleToggle,
 }: {
   index: number;
   username: string;
   checked: number[];
   game: GameDecorator;
+  isAnalysed: boolean;
   handleToggle: (value: number) => () => void;
 }) {
+  const navigate = useNavigate();
   const rawGame = game.getGame();
   const labelId = `checkbox-list-label-${rawGame.id}`;
 
+  const handleClick = () => {
+    if (isAnalysed) {
+      navigate('/analysis', { state: { game } });
+    } else {
+      handleToggle(index)();
+    }
+  };
+
   return (
     <ListItem key={rawGame.id}>
-      <ListItemButton onClick={handleToggle(index)}>
+      <ListItemButton onClick={handleClick}>
         <ListItemIcon>
           <Chessboard
             boardWidth={210}
@@ -31,14 +44,23 @@ export default function GameTile({
             position={game.parsePosition()}
             boardOrientation={game.getOrientation(username)}
           />
-          <Checkbox
-            edge="start"
-            tabIndex={-1}
-            disableRipple
-            sx={{ margin: '0 1.5em 0' }}
-            checked={checked.indexOf(index) !== -1}
-            inputProps={{ 'aria-labelledby': labelId }}
-          />
+          {isAnalysed ? (
+            <IconButton
+              sx={{ margin: '0 1em 0' }}
+            >
+              <DoneIcon />
+            </IconButton>
+          ) : (
+            <Checkbox
+              edge="start"
+              tabIndex={-1}
+              disableRipple
+              sx={{ margin: '0 1.5em 0' }}
+              onClick={handleToggle(index)}
+              checked={checked.indexOf(index) !== -1}
+              inputProps={{ 'aria-labelledby': labelId }}
+            />
+          )}
         </ListItemIcon>
         <ListItemText>
           <Stack spacing={5}>

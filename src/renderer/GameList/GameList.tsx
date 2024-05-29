@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { connectEngine, getAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination } from '@mui/material';
+import LinearProgressWithLabel from '../LinearProgressWithLabel';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
 import { ChangeEvent, useState } from 'react';
@@ -17,23 +18,30 @@ export default function GameList({
 }) {
   const [gamesAnalysis, setGamesAnalysis] = useState<
     Array<{ [key: string]: any }>
-  >(new Array(games.length).fill({}));
+  >(new Array(games.length).fill(null));
+  const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
   const handleToggleAll = () => {
     if (allChecked) {
       setChecked([]);
     } else {
-      const allIndexes = games.map((_, index) => index);
+      const allIndexes = games
+        .map((_, index) => index)
+        .filter((index) => gamesAnalysis[index] === null);
       setChecked(allIndexes);
     }
     setAllChecked(!allChecked);
   };
 
   const handleToggle = (value: number) => () => {
+    if (gamesAnalysis[value] !== null) return;
+
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -71,12 +79,29 @@ export default function GameList({
     const newGamesAnalysis = [...gamesAnalysis];
     await connectEngine();
 
-    for (let i = 0; i < gamesToAnalyse.length; i += 1) {
+    const totalGames = gamesToAnalyse.length;
+    let totalTime = 0;
+
+    for (let i = 0; i < totalGames; i += 1) {
       const { game, index } = gamesToAnalyse[i];
+      const startTime = performance.now();
+
       newGamesAnalysis[index] = await analyseGame(game);
+
+      const endTime = performance.now();
+      const gameTime = endTime - startTime;
+
+      totalTime += gameTime;
+      const averageTimePerGame = totalTime / (i + 1);
+      const estimatedTotalTime = (averageTimePerGame * totalGames) / 1000;
+
+      const remainingTime = estimatedTotalTime - totalTime / 1000;
+      setEstimatedTime(`${Math.round(remainingTime)} segundos`);
+      setProgress(((i + 1) / totalGames) * 100);
     }
 
     setGamesAnalysis(newGamesAnalysis);
+    setChecked([]);
   }
 
   const handleSubmit = async () => {
@@ -84,7 +109,14 @@ export default function GameList({
       .map((game, index) => ({ game, index }))
       .filter(({ index }) => checked.includes(index));
 
-    await analyseGames(gamesToAnalyse);
+    if (gamesToAnalyse.length > 0) {
+      setLoading(true);
+      await analyseGames(gamesToAnalyse);
+      setLoading(false);
+
+      setEstimatedTime(null);
+      setProgress(0);
+    }
   };
 
   const handleBack = () => {
@@ -93,43 +125,54 @@ export default function GameList({
 
   return (
     <Paper sx={{ padding: '2.5em 3.5em', minWidth: '40vw' }}>
-      <Stack spacing={5}>
-        <Button variant="contained" onClick={handleToggleAll}>
-          Seleccionar todas
-        </Button>
-        <List style={{ maxHeight: '50vh', overflow: 'auto' }}>
-          {currentGames.map((game, index) => (
-            <GameTile
-              game={game}
-              checked={checked}
-              username={username}
-              key={game.getGame().id}
-              index={startIndex + index}
-              handleToggle={handleToggle}
-            />
-          ))}
-        </List>
-        <Pagination
-          showLastButton
-          showFirstButton
-          count={totalPages}
-          onChange={handlePageChange}
-          sx={{ alignSelf: 'center' }}
-        />
-        <Stack spacing={5} direction="row">
-          <Button fullWidth variant="contained" onClick={handleSubmit}>
-            Analizar
+      {loading ? (
+        <>
+          <p>
+            Analizando partidas...
+            {estimatedTime ? ` (Tiempo estimado: ${estimatedTime})` : ''}
+          </p>
+          <LinearProgressWithLabel progress={progress} />
+        </>
+      ) : (
+        <Stack spacing={5}>
+          <Button variant="contained" onClick={handleToggleAll}>
+            Seleccionar todas
           </Button>
-          <Button
-            fullWidth
-            color="secondary"
-            variant="contained"
-            onClick={handleBack}
-          >
-            Atrás
-          </Button>
+          <List style={{ maxHeight: '50vh', overflow: 'auto' }}>
+            {currentGames.map((game, index) => (
+              <GameTile
+                game={game}
+                checked={checked}
+                username={username}
+                key={game.getGame().id}
+                index={startIndex + index}
+                handleToggle={handleToggle}
+                isAnalysed={gamesAnalysis[startIndex + index] !== null}
+              />
+            ))}
+          </List>
+          <Pagination
+            showLastButton
+            showFirstButton
+            count={totalPages}
+            onChange={handlePageChange}
+            sx={{ alignSelf: 'center' }}
+          />
+          <Stack spacing={5} direction="row">
+            <Button fullWidth variant="contained" onClick={handleSubmit}>
+              Analizar
+            </Button>
+            <Button
+              fullWidth
+              color="secondary"
+              variant="contained"
+              onClick={handleBack}
+            >
+              Atrás
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      )}
     </Paper>
   );
 }
