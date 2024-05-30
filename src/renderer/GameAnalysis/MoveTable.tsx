@@ -33,10 +33,11 @@ export default function MoveTable({
     scrollTo(cellIndex);
   }, [currentIndex, moves.length]);
 
-  function formatAdvantage(rawAdvantage: number | null) {
+  function formatAdvantage(rawAdvantage: number) {
     let formattedAdvantage = '';
-    if (rawAdvantage) {
-      formattedAdvantage = (rawAdvantage! < 0 ? '' : '+') + rawAdvantage;
+    if (rawAdvantage !== undefined) {
+      const formattedNumber = rawAdvantage.toFixed(1);
+      formattedAdvantage = (rawAdvantage <= 0 ? '' : '+') + formattedNumber;
     }
 
     return formattedAdvantage;
@@ -54,7 +55,7 @@ export default function MoveTable({
         <TableCell
           sx={{
             color: currentIndex === i + 1 ? '#000000' : 'inherit',
-            backgroundColor: currentIndex === i + 1 ? '#FFAE80' : 'inherit',
+            backgroundColor: currentIndex === i + 1 ? '#B1D5F6' : 'inherit',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -65,7 +66,7 @@ export default function MoveTable({
         <TableCell
           sx={{
             color: currentIndex === i + 2 ? '#000000' : 'inherit',
-            backgroundColor: currentIndex === i + 2 ? '#FFAE80' : 'inherit',
+            backgroundColor: currentIndex === i + 2 ? '#B1D5F6' : 'inherit',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>

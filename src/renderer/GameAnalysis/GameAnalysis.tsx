@@ -88,9 +88,7 @@ export default function GameAnalysis() {
             colors={['#FFAE80']}
             data={analysis.advantage}
             valueFormatter={(v) => {
-              return v
-                ? `Ventaja: ${(v! < 0 ? '' : '+') + v}`
-                : 'Ventaja desconocida';
+              return `Ventaja: ${(v! <= 0 ? '' : '+') + v!.toFixed(1)}`;
             }}
           />
         </Grid>

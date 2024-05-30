@@ -22,22 +22,33 @@ export async function connectEngine() {
   await send('setoption name Use NNUE value true');
 }
 
-function getAdvantage() {
-  return new Promise<number | null>((resolve) => {
-    engine.send('eval', function onDone(data) {
-      const evalRegex = /Final evaluation\s+([-+]?\d*\.\d+)/;
-      const match = data.match(evalRegex);
+function getCentipawns(color: string) {
+  let latestCp: number = 0;
 
-      const advantage = match && match[1] ? parseFloat(match[1]) : null;
-      resolve(advantage);
-    });
+  return new Promise<number>((resolve) => {
+    engine.send(
+      'go nodes 10000',
+      function onDone() {
+        if (color === 'w') {
+          latestCp = -latestCp;
+        }
+        resolve(latestCp);
+      },
+      function onStream(data) {
+        const cpRegex = /score cp (-?\d+)/;
+        const match = data.match(cpRegex);
+        if (match && match[1]) {
+          latestCp = parseFloat(match[1]);
+        }
+      },
+    );
   });
 }
 
-async function getCentipawns() {
-  const advantage = await getAdvantage();
+async function getAdvantage(color: string) {
+  const centipawns = await getCentipawns(color);
 
-  return advantage ? advantage * 100 : null;
+  return centipawns / 100;
 }
 
 function calculateWinPercentage(cp: number) {
@@ -66,50 +77,48 @@ function calculateAverage(values: number[]) {
 }
 
 export async function getAccuracy(moves: string[]) {
-  const accuracyPerMove: (number | null)[] = [];
-  let cpBefore = await getCentipawns();
+  const accuracyPerMove: number[] = [];
   const chess = new Chess();
+  let cpBefore = 0;
 
   for (let i = 0; i < moves.length; i += 1) {
     chess.move(moves[i]);
     await send(`position fen ${chess.fen()}`);
 
-    const cpAfter = await getCentipawns();
-    let accuracyPercentage = null;
-    if (cpBefore !== null && cpAfter !== null) {
-      const wPBefore = calculateWinPercentage(cpBefore);
-      const wPAfter = calculateWinPercentage(cpAfter);
+    const color = i % 2 === 0 ? 'w' : 'b';
+    const cpAfter = await getCentipawns(color);
+    const wPAfter = calculateWinPercentage(cpAfter);
+    const wPBefore = calculateWinPercentage(cpBefore);
 
-      accuracyPercentage = calculateAccPercentage(wPBefore, wPAfter);
-    }
-
+    const accuracyPercentage = calculateAccPercentage(wPBefore, wPAfter);
     accuracyPerMove.push(accuracyPercentage);
-    cpBefore = cpAfter ? -cpAfter : null;
+    cpBefore = -cpAfter;
     await send('flip');
   }
 
   const whitePlayerAccuracy = accuracyPerMove.filter(
-    (acc, index) => index % 2 === 0 && acc !== null,
-  ) as number[];
+    (_, index) => index % 2 === 0,
+  );
   const whitePlayerAverage = calculateAverage(whitePlayerAccuracy);
 
   const blackPlayerAccuracy = accuracyPerMove.filter(
-    (acc, index) => index % 2 !== 0 && acc !== null,
-  ) as number[];
+    (_, index) => index % 2 !== 0,
+  );
   const blackPlayerAverage = calculateAverage(blackPlayerAccuracy);
 
   return { whitePlayerAverage, blackPlayerAverage };
 }
 
 export async function getGameAdvantage(moves: string[]) {
-  const advantagePerMove: (number | null)[] = [];
+  const advantagePerMove: number[] = [];
   const chess = new Chess();
 
   for (let i = 0; i < moves.length; i += 1) {
     chess.move(moves[i]);
     await send(`position fen ${chess.fen()}`);
 
-    advantagePerMove.push(await getAdvantage());
+    const color = i % 2 === 0 ? 'w' : 'b';
+    advantagePerMove.push(await getAdvantage(color));
   }
 
   return advantagePerMove;
