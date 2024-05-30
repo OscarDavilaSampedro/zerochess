@@ -128,17 +128,11 @@ export class GameDecorator {
 
   parseGameWinner(): string {
     const { winner, status } = this.game;
-    let result = '';
-
-    if (status !== 'draw') {
-      result = ' • Las blancas ganan';
-
-      if (winner === 'black') {
-        result = ' • Las negras ganan';
-      }
+    if (status === 'draw') {
+      return '';
     }
 
-    return result;
+    return winner === 'black' ? ' • Las negras ganan' : ' • Las blancas ganan';
   }
 
   parseGameMoves(): string {

@@ -22,23 +22,27 @@ export async function connectEngine() {
   await send('setoption name Use NNUE value true');
 }
 
-function getCentipawns(color: string) {
-  let latestScore: string | number = 0;
+function getCentipawns(color: string, nodes: number = 10000) {
+  let latestScore: number | string = 0;
 
-  return new Promise<string | number>((resolve) => {
+  return new Promise<number | string>((resolve) => {
     engine.send(
-      'go nodes 10000',
+      `go nodes ${nodes}`,
       function onDone() {
-        if (typeof latestScore === 'number' && color === 'w') {
-          latestScore = -latestScore;
-        } else if (typeof latestScore === 'string' && color === 'w') {
-          latestScore = `#${-parseInt(latestScore.substring(1), 10)}`;
+        if (color === 'w') {
+          if (typeof latestScore === 'number') {
+            latestScore = -latestScore;
+          } else {
+            latestScore = `#${-parseInt(latestScore.substring(1), 10)}`;
+          }
         }
+
         resolve(latestScore);
       },
       function onStream(data) {
         const cpRegex = /score cp (-?\d+)/;
         const mateRegex = /score mate (-?\d+)/;
+
         let match = data.match(mateRegex);
         if (match && match[1]) {
           latestScore = `#${match[1]}`;
@@ -53,9 +57,14 @@ function getCentipawns(color: string) {
   });
 }
 
+function convertCpAfter(cpBefore: number, cpAfter: string): number {
+  const cpAfterNumber = parseInt(cpAfter.substring(1), 10);
+
+  return cpBefore + cpAfterNumber * 100;
+}
+
 async function getAdvantage(color: string) {
   let centipawns = await getCentipawns(color);
-
   if (typeof centipawns === 'number') {
     centipawns /= 100;
   }
@@ -63,7 +72,7 @@ async function getAdvantage(color: string) {
   return centipawns;
 }
 
-/* function calculateWinPercentage(cp: number) {
+function calculateWinPercentage(cp: number) {
   const winPercentage = 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 
   return winPercentage;
@@ -88,7 +97,7 @@ function calculateAverage(values: number[]) {
   return average;
 }
 
-export async function getAccuracy(moves: string[]) {
+export async function getGameAccuracy(moves: string[]) {
   const accuracyPerMove: number[] = [];
   const chess = new Chess();
   let cpBefore = 0;
@@ -98,7 +107,10 @@ export async function getAccuracy(moves: string[]) {
     await send(`position fen ${chess.fen()}`);
 
     const color = i % 2 === 0 ? 'w' : 'b';
-    const cpAfter = await getCentipawns(color);
+    let cpAfter = await getCentipawns(color);
+    if (typeof cpAfter === 'string') {
+      cpAfter = convertCpAfter(cpBefore, cpAfter);
+    }
     const wPAfter = calculateWinPercentage(cpAfter);
     const wPBefore = calculateWinPercentage(cpBefore);
 
@@ -119,7 +131,7 @@ export async function getAccuracy(moves: string[]) {
   const blackPlayerAverage = calculateAverage(blackPlayerAccuracy);
 
   return { whitePlayerAverage, blackPlayerAverage };
-} */
+}
 
 export async function getGameAdvantage(moves: string[]) {
   const advantagePerMove: (number | string)[] = [];
