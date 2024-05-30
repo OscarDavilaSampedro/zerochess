@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { connectEngine, getAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
+import { connectEngine, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination, Box } from '@mui/material';
 import LinearProgressWithLabel from '../LinearProgressWithLabel';
 import { GameDecorator } from '../../interfaces';
@@ -68,9 +68,9 @@ export default function GameList({
     const moves = game.getGameMoves();
 
     const advantage = await getGameAdvantage(moves);
-    const accuracy = await getAccuracy(moves);
+    // const accuracy = await getAccuracy(moves);
 
-    return { advantage, accuracy };
+    return { advantage };
   }
 
   async function analyseGames(

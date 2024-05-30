@@ -1,14 +1,9 @@
-import {
-  FastForwardRounded,
-  FastRewindRounded,
-  SkipNextRounded,
-  SkipPreviousRounded,
-} from '@mui/icons-material';
+import { FastForwardRounded, FastRewindRounded, SkipNextRounded, SkipPreviousRounded } from '@mui/icons-material';
 import { Box, Grid, IconButton, Paper } from '@mui/material';
 import { GameDecorator } from '../../interfaces';
-import { SparkLineChart } from '@mui/x-charts';
 import { useLocation } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
+import AdvantageChart from './AdvantageChart';
 import MoveTable from './MoveTable';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
@@ -79,18 +74,7 @@ export default function GameAnalysis() {
           </Paper>
         </Grid>
         <Grid item xs={8}>
-          <SparkLineChart
-            area
-            showTooltip
-            width={500}
-            height={240}
-            showHighlight
-            colors={['#FFAE80']}
-            data={analysis.advantage}
-            valueFormatter={(v) => {
-              return `Ventaja: ${(v! <= 0 ? '' : '+') + v!.toFixed(1)}`;
-            }}
-          />
+          <AdvantageChart advantage={analysis.advantage} />
         </Grid>
         <Grid item xs={4}>
           <IconButton onClick={handleBottom}>

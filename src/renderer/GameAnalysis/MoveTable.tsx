@@ -33,9 +33,9 @@ export default function MoveTable({
     scrollTo(cellIndex);
   }, [currentIndex, moves.length]);
 
-  function formatAdvantage(rawAdvantage: number) {
-    let formattedAdvantage = '';
-    if (rawAdvantage !== undefined) {
+  function formatAdvantage(rawAdvantage: number | string) {
+    let formattedAdvantage = rawAdvantage;
+    if (typeof rawAdvantage !== 'string') {
       const formattedNumber = rawAdvantage.toFixed(1);
       formattedAdvantage = (rawAdvantage <= 0 ? '' : '+') + formattedNumber;
     }

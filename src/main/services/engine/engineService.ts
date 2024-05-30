@@ -23,22 +23,30 @@ export async function connectEngine() {
 }
 
 function getCentipawns(color: string) {
-  let latestCp: number = 0;
+  let latestScore: string | number = 0;
 
-  return new Promise<number>((resolve) => {
+  return new Promise<string | number>((resolve) => {
     engine.send(
       'go nodes 10000',
       function onDone() {
-        if (color === 'w') {
-          latestCp = -latestCp;
+        if (typeof latestScore === 'number' && color === 'w') {
+          latestScore = -latestScore;
+        } else if (typeof latestScore === 'string' && color === 'w') {
+          latestScore = `#${-parseInt(latestScore.substring(1), 10)}`;
         }
-        resolve(latestCp);
+        resolve(latestScore);
       },
       function onStream(data) {
         const cpRegex = /score cp (-?\d+)/;
-        const match = data.match(cpRegex);
+        const mateRegex = /score mate (-?\d+)/;
+        let match = data.match(mateRegex);
         if (match && match[1]) {
-          latestCp = parseFloat(match[1]);
+          latestScore = `#${match[1]}`;
+        } else {
+          match = data.match(cpRegex);
+          if (match && match[1]) {
+            latestScore = parseFloat(match[1]);
+          }
         }
       },
     );
@@ -46,12 +54,16 @@ function getCentipawns(color: string) {
 }
 
 async function getAdvantage(color: string) {
-  const centipawns = await getCentipawns(color);
+  let centipawns = await getCentipawns(color);
 
-  return centipawns / 100;
+  if (typeof centipawns === 'number') {
+    centipawns /= 100;
+  }
+
+  return centipawns;
 }
 
-function calculateWinPercentage(cp: number) {
+/* function calculateWinPercentage(cp: number) {
   const winPercentage = 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 
   return winPercentage;
@@ -107,10 +119,10 @@ export async function getAccuracy(moves: string[]) {
   const blackPlayerAverage = calculateAverage(blackPlayerAccuracy);
 
   return { whitePlayerAverage, blackPlayerAverage };
-}
+} */
 
 export async function getGameAdvantage(moves: string[]) {
-  const advantagePerMove: number[] = [];
+  const advantagePerMove: (number | string)[] = [];
   const chess = new Chess();
 
   for (let i = 0; i < moves.length; i += 1) {
