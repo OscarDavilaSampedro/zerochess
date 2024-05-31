@@ -9,15 +9,15 @@ import { Chess } from 'chess.js';
 import { useState } from 'react';
 
 export default function GameAnalysis() {
-  const [boardPosition, setBoardPosition] = useState(
-    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
-  );
-  const [currentIndex, setCurrentIndex] = useState(0);
   const { username, game, analysis } = useLocation().state as {
     analysis: { [key: string]: any };
     game: GameDecorator;
     username: string;
   };
+  const [boardPosition, setBoardPosition] = useState(
+    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   function replayMoves(index: number) {
     const moves = game.getGameMoves();
@@ -55,14 +55,13 @@ export default function GameAnalysis() {
     <Box>
       <Grid container spacing={5}>
         <Grid item xs={8}>
-          <div style={{ width: '500px' }}>
-            <Chessboard
-              position={boardPosition}
-              arePiecesDraggable={false}
-              customBoardStyle={{ borderRadius: '5px' }}
-              boardOrientation={game.getOrientation(username)}
-            />
-          </div>
+          <Chessboard
+            boardWidth={500}
+            position={boardPosition}
+            arePiecesDraggable={false}
+            customBoardStyle={{ borderRadius: '5px' }}
+            boardOrientation={game.getSide(username)}
+          />
         </Grid>
         <Grid item xs={4}>
           <Paper>

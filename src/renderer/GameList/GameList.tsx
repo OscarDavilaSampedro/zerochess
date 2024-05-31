@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import { connectEngine, getGameAdvantage } from '../../main/services/engine/engineService';
-import { Paper, List, Button, Stack, Pagination, Box } from '@mui/material';
+import { connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
+import { Paper, List, Button, Stack, Pagination, Box, TextField } from '@mui/material';
 import LinearProgressWithLabel from '../LinearProgressWithLabel';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +13,8 @@ export default function GameList({
   games,
   username,
 }: {
-  games: GameDecorator[];
   username: string;
+  games: GameDecorator[];
 }) {
   const [gamesAnalysis, setGamesAnalysis] = useState<
     Array<{ [key: string]: any }>
@@ -23,6 +23,7 @@ export default function GameList({
   const [checked, setChecked] = useState<number[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
@@ -36,29 +37,42 @@ export default function GameList({
         .filter((index) => gamesAnalysis[index] === null);
       setChecked(allIndexes);
     }
+
     setAllChecked(!allChecked);
   };
 
-  const handleToggle = (value: number) => () => {
-    if (gamesAnalysis[value] !== null) return;
+  const handleToggle = (value: number) => {
+    if (gamesAnalysis[value] === null) {
+      const currentIndex = checked.indexOf(value);
+      const newChecked = [...checked];
 
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+      if (currentIndex === -1) {
+        newChecked.push(value);
+      } else {
+        newChecked.splice(currentIndex, 1);
+      }
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+      setChecked(newChecked);
     }
-
-    setChecked(newChecked);
   };
 
-  const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
-  const endIndex = Math.min(startIndex + GAMES_PER_PAGE, games.length);
+  const handleSearchTermChange = (newValue: string) => {
+    setSearchTerm(newValue);
+    setCurrentPage(1);
+  };
 
-  const currentGames = games.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(games.length / GAMES_PER_PAGE);
+  const filteredGames = games.filter((game) => {
+    const opponentSide = game.getOpponentSide(username);
+    const opponentName = game.parsePlayerName(opponentSide);
+
+    return opponentName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
+  const endIndex = Math.min(startIndex + GAMES_PER_PAGE, filteredGames.length);
+
+  const currentGames = filteredGames.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredGames.length / GAMES_PER_PAGE);
 
   const handlePageChange = (_event: ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
@@ -68,20 +82,19 @@ export default function GameList({
     const moves = game.getGameMoves();
 
     const advantage = await getGameAdvantage(moves);
-    // const accuracy = await getAccuracy(moves);
+    const accuracy = await getGameAccuracy(moves);
 
-    return { advantage };
+    return { advantage, accuracy };
   }
 
   async function analyseGames(
     gamesToAnalyse: { game: GameDecorator; index: number }[],
   ) {
     const newGamesAnalysis = [...gamesAnalysis];
+    const totalGames = gamesToAnalyse.length;
     await connectEngine();
 
-    const totalGames = gamesToAnalyse.length;
     let totalTime = 0;
-
     for (let i = 0; i < totalGames; i += 1) {
       const { game, index } = gamesToAnalyse[i];
       const startTime = performance.now();
@@ -111,6 +124,7 @@ export default function GameList({
 
     if (gamesToAnalyse.length > 0) {
       setLoading(true);
+
       await analyseGames(gamesToAnalyse);
       setLoading(false);
 
@@ -134,21 +148,27 @@ export default function GameList({
           <LinearProgressWithLabel progress={progress} />
         </Box>
       ) : (
-        <Paper sx={{ padding: '2.5em 3.5em', minWidth: '40vw' }}>
+        <Paper sx={{ padding: '2.5em 3.5em', minWidth: '48em' }}>
           <Stack spacing={5}>
+            <TextField
+              size="small"
+              value={searchTerm}
+              label="Buscar por nombre del rival"
+              onChange={(e) => handleSearchTermChange(e.target.value)}
+            />
             <Button variant="contained" onClick={handleToggleAll}>
               Seleccionar todas
             </Button>
-            <List sx={{ maxHeight: '50vh', overflow: 'auto' }}>
-              {currentGames.map((game, index) => (
+            <List sx={{ maxHeight: '45vh', overflow: 'auto' }}>
+              {currentGames.map((game) => (
                 <GameTile
                   game={game}
                   checked={checked}
                   username={username}
                   key={game.getGame().id}
-                  index={startIndex + index}
+                  index={games.indexOf(game)}
                   handleToggle={handleToggle}
-                  analysis={gamesAnalysis[startIndex + index]}
+                  analysis={gamesAnalysis[games.indexOf(game)]}
                 />
               ))}
             </List>

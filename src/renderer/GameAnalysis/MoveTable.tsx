@@ -34,13 +34,25 @@ export default function MoveTable({
   }, [currentIndex, moves.length]);
 
   function formatAdvantage(rawAdvantage: number | string) {
-    let formattedAdvantage = rawAdvantage;
-    if (typeof rawAdvantage !== 'string') {
-      const formattedNumber = rawAdvantage.toFixed(1);
-      formattedAdvantage = (rawAdvantage <= 0 ? '' : '+') + formattedNumber;
+    switch (typeof rawAdvantage) {
+      case 'undefined': {
+        return '';
+      }
+      case 'string': {
+        return rawAdvantage;
+      }
+      default: {
+        const formattedNumber = rawAdvantage.toFixed(1);
+        return (rawAdvantage <= 0 ? '' : '+') + formattedNumber;
+      }
     }
+  }
 
-    return formattedAdvantage;
+  function getCellStyle(index: number) {
+    return {
+      color: currentIndex === index ? 'black' : 'inherit',
+      backgroundColor: currentIndex === index ? 'primary.main' : 'inherit',
+    };
   }
 
   for (let i = 0; i < moves.length; i += 2) {
@@ -52,23 +64,13 @@ export default function MoveTable({
         }}
       >
         <TableCell>{i / 2 + 1}</TableCell>
-        <TableCell
-          sx={{
-            color: currentIndex === i + 1 ? '#000000' : 'inherit',
-            backgroundColor: currentIndex === i + 1 ? '#B1D5F6' : 'inherit',
-          }}
-        >
+        <TableCell sx={getCellStyle(i + 1)}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>{moves[i]}</span>
             <span>{formatAdvantage(advantage[i])}</span>
           </div>
         </TableCell>
-        <TableCell
-          sx={{
-            color: currentIndex === i + 2 ? '#000000' : 'inherit',
-            backgroundColor: currentIndex === i + 2 ? '#B1D5F6' : 'inherit',
-          }}
-        >
+        <TableCell sx={getCellStyle(i + 2)}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>{moves[i + 1] || ''}</span>
             <span>{formatAdvantage(advantage[i + 1])}</span>

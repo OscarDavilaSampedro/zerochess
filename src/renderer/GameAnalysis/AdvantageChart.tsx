@@ -6,27 +6,33 @@ export default function AdvantageChart({
   advantage: (number | string)[];
 }) {
   let previousValue = 0;
-
-  const processedDataWithIndices = advantage.map((item, index) => {
+  const processedDataWithIndexes = advantage.map((item, index) => {
     if (typeof item === 'string') {
       const sign = item[1];
-      if (sign === '+') {
-        previousValue += 1;
-      } else if (sign === '-') {
-        previousValue -= 1;
-      } else {
-        previousValue += 0.001;
+      switch (sign) {
+        case '+': {
+          previousValue += 1;
+          break;
+        }
+        case '-': {
+          previousValue -= 1;
+          break;
+        }
+        default: {
+          previousValue += 0.001;
+          break;
+        }
       }
-    } else if (typeof item === 'number') {
+    } else {
       previousValue = item;
     }
 
     return { value: previousValue, index };
   });
 
-  const processedData = processedDataWithIndices.map(({ value }) => value);
+  const processedData = processedDataWithIndexes.map(({ value }) => value);
   const originalValueMap = new Map(
-    processedDataWithIndices.map(({ value, index }) => [
+    processedDataWithIndexes.map(({ value, index }) => [
       value,
       advantage[index],
     ]),
@@ -46,6 +52,7 @@ export default function AdvantageChart({
         if (typeof originalValue === 'string') {
           return `Ventaja: ${originalValue}`;
         }
+
         return `Ventaja: ${(v! <= 0 ? '' : '+') + v!.toFixed(1)}`;
       }}
     />

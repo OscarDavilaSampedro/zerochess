@@ -45,6 +45,7 @@ export default function Home({
       .then((games) => {
         window.electron.ipcRenderer.insertGames(games);
         showUserGames(games.map((game) => new GameDecorator(game)));
+
         return games;
       })
       .catch(() =>

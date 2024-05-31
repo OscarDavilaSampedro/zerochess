@@ -10,7 +10,7 @@ export interface Player {
   aiLevel?: number;
   rating: boolean;
   provisional: boolean;
-  user?: {
+  user: {
     id: string;
     name: string;
   };
@@ -91,7 +91,7 @@ export class GameDecorator {
     if (player.aiLevel) {
       return `Stockfish nivel ${player.aiLevel}`;
     }
-    if (!player.user) {
+    if (!player.user.id) {
       return 'Anónimo';
     }
     return player.user.name;
@@ -161,8 +161,12 @@ export class GameDecorator {
     return this.getGame().moves.split(' ');
   }
 
-  getOrientation(id: string) {
+  getSide(id: string) {
     return this.game.players.black.user?.id === id ? 'black' : 'white';
+  }
+
+  getOpponentSide(id: string) {
+    return this.game.players.black.user?.id === id ? 'white' : 'black';
   }
 
   getStatusColor(id: string) {
@@ -171,6 +175,6 @@ export class GameDecorator {
       return '';
     }
 
-    return winner === this.getOrientation(id) ? 'winner' : 'loser';
+    return winner === this.getSide(id) ? 'winner' : 'loser';
   }
 }

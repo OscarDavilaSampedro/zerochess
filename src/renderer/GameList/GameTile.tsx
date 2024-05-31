@@ -20,7 +20,7 @@ export default function GameTile({
   checked: number[];
   game: GameDecorator;
   analysis: { [key: string]: any };
-  handleToggle: (value: number) => () => void;
+  handleToggle: (value: number) => void;
 }) {
   const navigate = useNavigate();
   const rawGame = game.getGame();
@@ -30,7 +30,7 @@ export default function GameTile({
     if (analysis) {
       navigate('/analysis', { state: { username, game, analysis } });
     } else {
-      handleToggle(index)();
+      handleToggle(index);
     }
   };
 
@@ -43,24 +43,17 @@ export default function GameTile({
             arePiecesDraggable={false}
             position={game.parsePosition()}
             customBoardStyle={{ borderRadius: '5px' }}
-            boardOrientation={game.getOrientation(username)}
+            boardOrientation={game.getSide(username)}
           />
           {analysis ? (
-            <IconButton
-              sx={{
-                margin: '0 1em 0',
-                '&:hover': { backgroundColor: 'transparent' },
-              }}
-            >
+            <IconButton disableRipple sx={{ margin: '0 1em 0' }}>
               <DoneIcon />
             </IconButton>
           ) : (
             <Checkbox
-              edge="start"
-              tabIndex={-1}
               disableRipple
               sx={{ margin: '0 1.5em 0' }}
-              onClick={handleToggle(index)}
+              onClick={() => handleToggle(index)}
               checked={checked.indexOf(index) !== -1}
               inputProps={{ 'aria-labelledby': labelId }}
             />
