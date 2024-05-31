@@ -10,7 +10,7 @@ export interface Player {
   aiLevel?: number;
   rating: boolean;
   provisional: boolean;
-  user: {
+  user?: {
     id: string;
     name: string;
   };
@@ -91,10 +91,11 @@ export class GameDecorator {
     if (player.aiLevel) {
       return `Stockfish nivel ${player.aiLevel}`;
     }
-    if (!player.user.id) {
+    if (!player.user || !player.user.id) {
       return 'Anónimo';
     }
-    return player.user.name;
+
+    return player.user!.name;
   }
 
   private parseGameLoser(): string {
