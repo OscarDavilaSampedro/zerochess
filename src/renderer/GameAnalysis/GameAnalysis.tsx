@@ -1,7 +1,7 @@
 import { FastForwardRounded, FastRewindRounded, SkipNextRounded, SkipPreviousRounded } from '@mui/icons-material';
-import { Box, Grid, IconButton, Paper } from '@mui/material';
+import { Box, Button, Grid, IconButton, Paper, Stack } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { GameDecorator } from '../../interfaces';
-import { useLocation } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
 import AdvantageChart from './AdvantageChart';
 import MoveTable from './MoveTable';
@@ -18,6 +18,7 @@ export default function GameAnalysis() {
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
   );
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   function replayMoves(index: number) {
     const moves = game.getGameMoves();
@@ -51,45 +52,61 @@ export default function GameAnalysis() {
     replayMoves(game.getGameMoves().length);
   };
 
+  const handleNavigate = () => {
+    navigate('/games');
+  };
+
   return (
     <Box>
-      <Grid container spacing={5}>
-        <Grid item xs={8}>
-          <Chessboard
-            boardWidth={500}
-            position={boardPosition}
-            arePiecesDraggable={false}
-            customBoardStyle={{ borderRadius: '5px' }}
-            boardOrientation={game.getSide(username)}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Paper>
+      <Paper sx={{ padding: '2.5em 3.5em', maxWidth: '57em' }}>
+        <Grid container spacing={5}>
+          <Grid item xs={7}>
+            <Chessboard
+              boardWidth={500}
+              position={boardPosition}
+              arePiecesDraggable={false}
+              boardOrientation={game.getSide(username)}
+              customBoardStyle={{ borderRadius: '5px' }}
+            />
+          </Grid>
+          <Grid item xs={5}>
             <MoveTable
               moves={game.getGameMoves()}
               currentIndex={currentIndex}
               advantage={analysis.advantage}
             />
-          </Paper>
+          </Grid>
+          <Grid item xs={7}>
+            <AdvantageChart advantage={analysis.advantage} />
+          </Grid>
+          <Grid item xs={5}>
+            <Stack sx={{ height: '100%' }} justifyContent="space-between">
+              <Stack direction="row" justifyContent="space-evenly">
+                <IconButton onClick={handleBottom}>
+                  <FastRewindRounded />
+                </IconButton>
+                <IconButton onClick={handleBack}>
+                  <SkipPreviousRounded />
+                </IconButton>
+                <IconButton onClick={handleNext}>
+                  <SkipNextRounded />
+                </IconButton>
+                <IconButton onClick={handleTop}>
+                  <FastForwardRounded />
+                </IconButton>
+              </Stack>
+              <Button
+                fullWidth
+                color="secondary"
+                variant="contained"
+                onClick={handleNavigate}
+              >
+                Atrás
+              </Button>
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid item xs={8}>
-          <AdvantageChart advantage={analysis.advantage} />
-        </Grid>
-        <Grid item xs={4}>
-          <IconButton onClick={handleBottom}>
-            <FastRewindRounded />
-          </IconButton>
-          <IconButton onClick={handleBack}>
-            <SkipPreviousRounded />
-          </IconButton>
-          <IconButton onClick={handleNext}>
-            <SkipNextRounded />
-          </IconButton>
-          <IconButton onClick={handleTop}>
-            <FastForwardRounded />
-          </IconButton>
-        </Grid>
-      </Grid>
+      </Paper>
     </Box>
   );
 }

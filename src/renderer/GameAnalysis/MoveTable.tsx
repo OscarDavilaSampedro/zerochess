@@ -81,7 +81,7 @@ export default function MoveTable({
   }
 
   return (
-    <Box sx={{ maxHeight: '50vh', overflow: 'auto' }}>
+    <Box sx={{ maxHeight: '498px', overflow: 'auto', border: 1 }}>
       <Table>
         <TableBody>{tableRows}</TableBody>
       </Table>
