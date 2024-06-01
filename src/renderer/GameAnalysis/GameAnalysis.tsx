@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { GameDecorator } from '../../interfaces';
 import { Chessboard } from 'react-chessboard';
 import AdvantageChart from './AdvantageChart';
+import AccuracyTab from './AccuracyTab';
 import MoveTable from './MoveTable';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
 
 export default function GameAnalysis() {
-  const { username, game, analysis } = useLocation().state as {
-    analysis: { [key: string]: any };
+  const { username, game } = useLocation().state as {
     game: GameDecorator;
     username: string;
   };
@@ -18,10 +18,11 @@ export default function GameAnalysis() {
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
   );
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { analysis } = game.getGame();
+  const moves = game.getGameMoves();
   const navigate = useNavigate();
 
   function replayMoves(index: number) {
-    const moves = game.getGameMoves();
     const chess = new Chess();
 
     for (let i = 0; i < index; i += 1) {
@@ -43,13 +44,13 @@ export default function GameAnalysis() {
   };
 
   const handleNext = () => {
-    if (currentIndex < game.getGameMoves().length) {
+    if (currentIndex < moves.length) {
       replayMoves(currentIndex + 1);
     }
   };
 
   const handleTop = () => {
-    replayMoves(game.getGameMoves().length);
+    replayMoves(moves.length);
   };
 
   const handleNavigate = () => {
@@ -71,13 +72,13 @@ export default function GameAnalysis() {
           </Grid>
           <Grid item xs={5}>
             <MoveTable
-              moves={game.getGameMoves()}
+              moves={moves}
               currentIndex={currentIndex}
-              advantage={analysis.advantage}
+              advantage={analysis!.advantage}
             />
           </Grid>
           <Grid item xs={7}>
-            <AdvantageChart advantage={analysis.advantage} />
+            <AdvantageChart advantage={analysis!.advantage} />
           </Grid>
           <Grid item xs={5}>
             <Stack sx={{ height: '100%' }} justifyContent="space-between">
@@ -95,6 +96,7 @@ export default function GameAnalysis() {
                   <FastForwardRounded />
                 </IconButton>
               </Stack>
+              <AccuracyTab />
               <Button
                 fullWidth
                 color="secondary"

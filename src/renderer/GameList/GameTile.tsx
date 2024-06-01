@@ -27,7 +27,7 @@ export default function GameTile({
   const handleClick = () => {
     const { analysis } = rawGame;
     if (analysis) {
-      navigate('/analysis', { state: { username, game, analysis } });
+      navigate('/analysis', { state: { username, game } });
     } else {
       handleToggle(index);
     }

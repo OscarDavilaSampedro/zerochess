@@ -85,6 +85,24 @@ export default function GameList({
     return { advantage, accuracy };
   }
 
+  function updateEstimatedTime(
+    index: number,
+    totalTime: number,
+    totalGames: number,
+  ) {
+    const averageTimePerGame = totalTime / (index + 1);
+    const estimatedTotalTime = (averageTimePerGame * totalGames) / 1000;
+
+    const remainingTime = estimatedTotalTime - totalTime / 1000;
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = Math.floor(remainingTime % 60);
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(
+      seconds,
+    ).padStart(2, '0')}`;
+
+    setEstimatedTime(formattedTime);
+  }
+
   async function analyseGames(gamesToAnalyse: GameDecorator[]) {
     const totalGames = gamesToAnalyse.length;
     await connectEngine();
@@ -106,12 +124,8 @@ export default function GameList({
       const gameTime = endTime - startTime;
 
       totalTime += gameTime;
-      const averageTimePerGame = totalTime / (i + 1);
-      const estimatedTotalTime = (averageTimePerGame * totalGames) / 1000;
-
-      const remainingTime = estimatedTotalTime - totalTime / 1000;
-      setEstimatedTime(`${Math.round(remainingTime)} segundos`);
       setProgress(((i + 1) / totalGames) * 100);
+      updateEstimatedTime(i, totalTime, totalGames);
     }
 
     setChecked([]);
@@ -142,8 +156,8 @@ export default function GameList({
       {loading ? (
         <Box sx={{ width: '25vw' }}>
           <p>
-            Analizando partidas...
-            {estimatedTime ? ` (Tiempo estimado: ${estimatedTime})` : ''}
+            Analizando...
+            {estimatedTime ? ` (Quedan ${estimatedTime})` : ''}
           </p>
           <LinearProgressWithLabel progress={progress} />
         </Box>
