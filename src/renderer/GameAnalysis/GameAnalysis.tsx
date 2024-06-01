@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { GameDecorator } from '../../interfaces';
 import { Chessboard } from 'react-chessboard';
 import AdvantageChart from './AdvantageChart';
-import AccuracyTab from './AccuracyTab';
+import AdviceSummary from './AdviceSummary/AdviceSummary';
 import MoveTable from './MoveTable';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
@@ -96,7 +96,7 @@ export default function GameAnalysis() {
                   <FastForwardRounded />
                 </IconButton>
               </Stack>
-              <AccuracyTab />
+              <AdviceSummary game={game} />
               <Button
                 fullWidth
                 color="secondary"
