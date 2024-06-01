@@ -33,6 +33,7 @@ export interface Game {
     black: Player;
     white: Player;
   };
+  analysis?: { [key: string]: any };
 }
 
 export interface Engine {
@@ -177,5 +178,9 @@ export class GameDecorator {
     }
 
     return winner === this.getSide(id) ? 'winner' : 'loser';
+  }
+
+  updateAnalysis(analysis: { [key: string]: any }) {
+    this.game.analysis = analysis;
   }
 }

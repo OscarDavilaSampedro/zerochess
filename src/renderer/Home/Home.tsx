@@ -1,5 +1,5 @@
 import { Button, TextField, Stack, Box, Paper, LinearProgress } from '@mui/material';
-import LinearProgressWithLabel from '../LinearProgressWithLabel';
+import LinearProgressWithLabel from './LinearProgressWithLabel';
 import { checkPlayer, handleGameStream } from '../../http';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
@@ -124,7 +124,7 @@ export default function Home({
               error={homeError}
               label="Nombre de usuario"
               helperText={homeHelperText}
-              onChange={(e) => onUsernameUpdate(e.target.value)}
+              onChange={(e) => onUsernameUpdate(e.target.value.toLowerCase())}
             />
             <Button variant="contained" onClick={handleSubmit}>
               Importar partidas

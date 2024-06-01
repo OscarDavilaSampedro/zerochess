@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { getPlayerGames, getPlayerGamesCount, insertGames } from './services/database/databaseService';
+import { getPlayerGames, getPlayerGamesCount, insertGames, updateGameAnalysis } from './services/database/databaseService';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from './util';
@@ -151,6 +151,9 @@ app
     });
     ipcMain.handle('database:getPlayerGamesCount', async (_, id) => {
       return getPlayerGamesCount(id);
+    });
+    ipcMain.handle('database:updateGameAnalysis', async (_, id, analysis) => {
+      return updateGameAnalysis(id, analysis);
     });
 
     createWindow();

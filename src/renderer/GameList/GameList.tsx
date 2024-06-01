@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination, Box, TextField } from '@mui/material';
-import LinearProgressWithLabel from '../LinearProgressWithLabel';
+import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
 import { ChangeEvent, useState } from 'react';
@@ -9,6 +9,7 @@ import GameTile from './GameTile';
 import './GameList.css';
 
 const GAMES_PER_PAGE = 10;
+
 export default function GameList({
   games,
   username,
@@ -16,9 +17,6 @@ export default function GameList({
   username: string;
   games: GameDecorator[];
 }) {
-  const [gamesAnalysis, setGamesAnalysis] = useState<
-    Array<{ [key: string]: any }>
-  >(new Array(games.length).fill(null));
   const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [allChecked, setAllChecked] = useState(false);
@@ -34,7 +32,7 @@ export default function GameList({
     } else {
       const allIndexes = games
         .map((_, index) => index)
-        .filter((index) => gamesAnalysis[index] === null);
+        .filter((index) => !games[index].getGame().analysis);
       setChecked(allIndexes);
     }
 
@@ -42,7 +40,7 @@ export default function GameList({
   };
 
   const handleToggle = (value: number) => {
-    if (gamesAnalysis[value] === null) {
+    if (!games[value].getGame().analysis) {
       const currentIndex = checked.indexOf(value);
       const newChecked = [...checked];
 
@@ -87,19 +85,22 @@ export default function GameList({
     return { advantage, accuracy };
   }
 
-  async function analyseGames(
-    gamesToAnalyse: { game: GameDecorator; index: number }[],
-  ) {
-    const newGamesAnalysis = [...gamesAnalysis];
+  async function analyseGames(gamesToAnalyse: GameDecorator[]) {
     const totalGames = gamesToAnalyse.length;
     await connectEngine();
 
     let totalTime = 0;
     for (let i = 0; i < totalGames; i += 1) {
-      const { game, index } = gamesToAnalyse[i];
+      const game = gamesToAnalyse[i];
       const startTime = performance.now();
 
-      newGamesAnalysis[index] = await analyseGame(game);
+      const analysis = await analyseGame(game);
+
+      game.updateAnalysis(analysis);
+      await window.electron.ipcRenderer.updateGameAnalysis(
+        game.getGame().id,
+        analysis,
+      );
 
       const endTime = performance.now();
       const gameTime = endTime - startTime;
@@ -113,14 +114,13 @@ export default function GameList({
       setProgress(((i + 1) / totalGames) * 100);
     }
 
-    setGamesAnalysis(newGamesAnalysis);
     setChecked([]);
   }
 
   const handleSubmit = async () => {
-    const gamesToAnalyse = games
-      .map((game, index) => ({ game, index }))
-      .filter(({ index }) => checked.includes(index));
+    const gamesToAnalyse = games.filter((_game, index) =>
+      checked.includes(index),
+    );
 
     if (gamesToAnalyse.length > 0) {
       setLoading(true);
@@ -168,7 +168,6 @@ export default function GameList({
                   key={game.getGame().id}
                   index={games.indexOf(game)}
                   handleToggle={handleToggle}
-                  analysis={gamesAnalysis[games.indexOf(game)]}
                 />
               ))}
             </List>

@@ -32,6 +32,11 @@ const electronHandler = {
       ipcRenderer.invoke('database:getPlayerGames', id),
     getPlayerGamesCount: (id: string): Promise<number> =>
       ipcRenderer.invoke('database:getPlayerGamesCount', id),
+    updateGameAnalysis: (
+      id: string,
+      analysis: { [key: string]: any },
+    ): Promise<void> =>
+      ipcRenderer.invoke('database:updateGameAnalysis', id, analysis),
   },
 };
 

@@ -1,4 +1,4 @@
-import { COUNT_GAMES_BY_USER_ID, INSERT_GAME, SELECT_GAME_BY_USER_ID } from './helpers/queries';
+import { COUNT_GAMES_BY_USER_ID, INSERT_GAME, SELECT_GAME_BY_USER_ID, UPDATE_GAME_ANALYSIS } from './helpers/queries';
 import { mapGameToRow, mapRowToGame } from './helpers/mapping';
 import { Game } from '../../../interfaces';
 import Database from 'better-sqlite3';
@@ -14,16 +14,21 @@ function connectDatabase() {
 
 export function insertGames(games: Game[]) {
   const db = connectDatabase();
-  const existsStm = db.prepare('SELECT id FROM game WHERE id = @id');
   const insertStm = db.prepare(INSERT_GAME);
 
-  games.forEach((game) => {
-    const existingGame = existsStm.get({ id: game.id });
+  const batchSize = 1000;
+  const gameBatches: Game[][] = [];
+  for (let i = 0; i < games.length; i += batchSize) {
+    gameBatches.push(games.slice(i, i + batchSize));
+  }
 
-    if (!existingGame) {
-      insertStm.run(mapGameToRow(game));
-    }
-  });
+  db.transaction(() => {
+    gameBatches.forEach((batch) => {
+      batch.forEach((game) => {
+        insertStm.run(mapGameToRow(game));
+      });
+    });
+  })();
 
   db.close();
 }
@@ -47,4 +52,16 @@ export function getPlayerGamesCount(id: string) {
 
   db.close();
   return result.count;
+}
+
+export function updateGameAnalysis(
+  id: string,
+  analysis: { [key: string]: any },
+) {
+  const db = connectDatabase();
+  const stm = db.prepare(UPDATE_GAME_ANALYSIS);
+
+  stm.run({ id, analysis: JSON.stringify(analysis) });
+
+  db.close();
 }

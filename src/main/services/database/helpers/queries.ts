@@ -11,11 +11,15 @@ export const INSERT_GAME = `
     id, initial, increment, totalTime, perf, speed, moves,
     source, rated, status, winner, variant, createdAt, lastMoveAt,
     black_aiLevel, black_rating, black_provisional, black_user_id, black_user_name,
-    white_aiLevel, white_rating, white_provisional, white_user_id, white_user_name
+    white_aiLevel, white_rating, white_provisional, white_user_id, white_user_name, analysis
   ) VALUES (
     @id, @initial, @increment, @totalTime, @perf, @speed, @moves,
     @source, @rated, @status, @winner, @variant, @createdAt, @lastMoveAt,
     @black_aiLevel, @black_rating, @black_provisional, @black_user_id, @black_user_name,
-    @white_aiLevel, @white_rating, @white_provisional, @white_user_id, @white_user_name
+    @white_aiLevel, @white_rating, @white_provisional, @white_user_id, @white_user_name, @analysis
   )
+`;
+
+export const UPDATE_GAME_ANALYSIS = `
+  UPDATE game SET analysis = @analysis WHERE id = @id
 `;

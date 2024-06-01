@@ -12,14 +12,12 @@ export default function GameTile({
   index,
   checked,
   username,
-  analysis,
   handleToggle,
 }: {
   index: number;
   username: string;
   checked: number[];
   game: GameDecorator;
-  analysis: { [key: string]: any };
   handleToggle: (value: number) => void;
 }) {
   const navigate = useNavigate();
@@ -27,6 +25,7 @@ export default function GameTile({
   const labelId = `checkbox-list-label-${rawGame.id}`;
 
   const handleClick = () => {
+    const { analysis } = rawGame;
     if (analysis) {
       navigate('/analysis', { state: { username, game, analysis } });
     } else {
@@ -45,7 +44,7 @@ export default function GameTile({
             customBoardStyle={{ borderRadius: '5px' }}
             boardOrientation={game.getSide(username)}
           />
-          {analysis ? (
+          {rawGame.analysis ? (
             <IconButton disableRipple sx={{ margin: '0 1em 0' }}>
               <DoneIcon />
             </IconButton>

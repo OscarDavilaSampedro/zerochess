@@ -46,6 +46,8 @@ export function mapGameToRow(game: Game) {
     white_provisional: mapBooleanToNumber(whitePlayer.provisional),
     white_user_id: setDefaultValue(whitePlayer.user?.id),
     white_user_name: setDefaultValue(whitePlayer.user?.name),
+
+    analysis: JSON.stringify(game.analysis),
   };
 }
 
@@ -89,5 +91,6 @@ export function mapRowToGame(row: any): Game {
       black: mapRowToPlayer(row, 'black'),
       white: mapRowToPlayer(row, 'white'),
     },
+    analysis: row.analysis ? JSON.parse(row.analysis) : undefined,
   };
 }
