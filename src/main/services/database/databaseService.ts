@@ -1,7 +1,8 @@
-import { COUNT_GAMES_BY_USER_ID, INSERT_GAME, SELECT_GAME_BY_USER_ID, UPDATE_GAME_ANALYSIS } from './helpers/queries';
+import { COUNT_GAMES_BY_USER_ID, CREATE_GAME_TABLE, INSERT_GAME, SELECT_GAME_BY_USER_ID, UPDATE_GAME_ANALYSIS } from './helpers/queries';
 import { mapGameToRow, mapRowToGame } from './helpers/mapping';
 import { Game } from '../../../interfaces';
 import Database from 'better-sqlite3';
+import { app } from 'electron';
 import path from 'path';
 
 interface CountResult {
@@ -9,7 +10,10 @@ interface CountResult {
 }
 
 function connectDatabase() {
-  return Database(path.join(__dirname, '../../../../release/app/database.db'));
+  const db = Database(path.join(app.getPath('userData'), 'database.db'));
+  db.exec(CREATE_GAME_TABLE);
+
+  return db;
 }
 
 export function insertGames(games: Game[]) {
