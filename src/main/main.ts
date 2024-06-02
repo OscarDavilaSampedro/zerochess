@@ -120,7 +120,14 @@ app
   .whenReady()
   .then(() => {
     ipcMain.handle('engine:joinPath', async (_, pathToJoin) => {
+      if (isDebug) {
       return path.join(__dirname, pathToJoin);
+      }
+      return path.join(
+        __dirname.substring(0, __dirname.length - 18),
+        'src/main/',
+        pathToJoin,
+      );
     });
     ipcMain.handle('engine:spawnChildProcess', async (_, command, args) => {
       return childProcess.spawn(command, args, { stdio: 'pipe' });

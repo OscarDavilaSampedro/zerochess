@@ -183,8 +183,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "ZeroChess",
+    "appId": "org.erb.ZeroChess",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -238,7 +238,10 @@
       "output": "release/build"
     },
     "extraResources": [
-      "./assets/**"
+      "./assets/**",
+      "./src/main/services/engine/helpers/stockfish.js",
+      "./src/main/services/engine/helpers/stockfish.wasm",
+      "./src/main/services/engine/helpers/nn-5af11540bbfe.nnue"
     ],
     "publish": {
       "provider": "github",
