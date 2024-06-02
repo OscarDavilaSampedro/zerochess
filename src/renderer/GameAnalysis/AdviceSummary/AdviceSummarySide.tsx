@@ -1,6 +1,7 @@
 import { Circle, PanoramaFishEye } from '@mui/icons-material';
 import { GameDecorator } from '../../../interfaces';
 import { Stack } from '@mui/material';
+import './AdviceSummary.css';
 
 export default function AdviceSummarySide({
   side,
@@ -34,44 +35,25 @@ export default function AdviceSummarySide({
   const Icon = side === 'white' ? Circle : PanoramaFishEye;
 
   return (
-    <Stack sx={{ width: '11em', fontSize: '0.75em' }}>
-      <div style={{ display: 'flex' }}>
-        <Icon style={{ flex: '0 1 4ch', fontSize: '1.5em' }} />
+    <Stack className="stack">
+      <div className="row">
+        <Icon sx={{ flex: '0 1 4ch', fontSize: '1.5em' }} />
         <span>{game.parsePlayerName(side)}</span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          color: `${inaccuracies > 0 ? '#53b2ea' : 'inherit'}`,
-        }}
-      >
-        <span style={{ flex: '0 1 6ch', textAlign: 'center' }}>
-          {inaccuracies}
-        </span>
+      <div className={`row ${inaccuracies > 0 ? 'inaccuracies' : ''}`}>
+        <span>{inaccuracies}</span>
         <span>{inaccuracies === 1 ? 'imprecisión' : 'imprecisiones'}</span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          color: `${mistakes > 0 ? '#e69d00' : 'inherit'}`,
-        }}
-      >
-        <span style={{ flex: '0 1 6ch', textAlign: 'center' }}>{mistakes}</span>
+      <div className={`row ${mistakes > 0 ? 'mistakes' : ''}`}>
+        <span>{mistakes}</span>
         <span>{mistakes === 1 ? 'error' : 'errores'}</span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          color: `${blunders > 0 ? '#df5353' : 'inherit'}`,
-        }}
-      >
-        <span style={{ flex: '0 1 6ch', textAlign: 'center' }}>{blunders}</span>
+      <div className={`row ${blunders > 0 ? 'blunders' : ''}`}>
+        <span>{blunders}</span>
         <span>{blunders === 1 ? 'error grave' : 'errores graves'}</span>
       </div>
-      <div style={{ display: 'flex' }}>
-        <span style={{ flex: '0 1 6ch', textAlign: 'center' }}>
-          {Math.round(accuracy[`${side}PlayerAverage`])}%
-        </span>
+      <div className="row">
+        <span>{Math.round(accuracy[`${side}PlayerAverage`])}%</span>
         <span>Precisión</span>
       </div>
     </Stack>

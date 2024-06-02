@@ -1,5 +1,6 @@
 import { Route, Routes, MemoryRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import GameStatistics from './GameStatistics/GameStatistics';
 import GameAnalysis from './GameAnalysis/GameAnalysis';
 import { GameDecorator } from '../interfaces';
 import GameList from './GameList/GameList';
@@ -50,11 +51,15 @@ export default function App() {
               />
             }
           />
+          <Route path="/analysis" element={<GameAnalysis />} />
           <Route
             path="/games"
             element={<GameList games={games} username={username} />}
           />
-          <Route path="/analysis" element={<GameAnalysis />} />
+          <Route
+            path="/statistics"
+            element={<GameStatistics games={games} username={username} />}
+          />
         </Routes>
       </Router>
     </ThemeProvider>

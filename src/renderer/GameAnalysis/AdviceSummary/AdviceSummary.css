@@ -1,0 +1,25 @@
+.stack {
+  width: 11em;
+  font-size: 0.75em;
+}
+
+.row {
+  display: flex;
+}
+
+.row:not(:first-of-type) span:first-of-type {
+  flex: 0 1 6ch;
+  text-align: center;
+}
+
+.inaccuracies {
+  color: #53b2ea;
+}
+
+.mistakes {
+  color: #e69d00;
+}
+
+.blunders {
+  color: #df5353;
+}

@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import { connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
-import { Paper, List, Button, Stack, Pagination, Box, TextField } from '@mui/material';
+import { Paper, List, Button, Stack, Pagination, Box, TextField, IconButton } from '@mui/material';
 import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
+import { Troubleshoot } from '@mui/icons-material';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
 import { ChangeEvent, useState } from 'react';
@@ -151,6 +152,10 @@ export default function GameList({
     navigate('/');
   };
 
+  const handleStatistics = () => {
+    navigate('/statistics');
+  };
+
   return (
     <Box>
       {loading ? (
@@ -170,9 +175,14 @@ export default function GameList({
               label="Buscar por nombre del rival"
               onChange={(e) => handleSearchTermChange(e.target.value)}
             />
-            <Button variant="contained" onClick={handleToggleAll}>
-              Seleccionar todas
-            </Button>
+            <Stack spacing={5} sx={{ height: '2.3em' }} direction="row">
+              <IconButton onClick={handleStatistics}>
+                <Troubleshoot />
+              </IconButton>
+              <Button fullWidth variant="contained" onClick={handleToggleAll}>
+                Seleccionar todas
+              </Button>
+            </Stack>
             <List sx={{ maxHeight: '45vh', overflow: 'auto' }}>
               {currentGames.map((game) => (
                 <GameTile
