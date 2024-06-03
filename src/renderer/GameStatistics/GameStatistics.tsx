@@ -91,9 +91,9 @@ export default function GameStatistics({
               },
             ]}
           />
-          <Box width={150}>
+          <Box width={200}>
             <BarChart
-              width={200}
+              width={250}
               height={200}
               series={[{ data: values }]}
               xAxis={[{ scaleType: 'band', data: keys }]}
