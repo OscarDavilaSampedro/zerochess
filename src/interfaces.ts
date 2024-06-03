@@ -7,9 +7,9 @@ export interface Clock {
 }
 
 export interface Player {
+  rating?: number;
   aiLevel?: number;
-  rating: boolean;
-  provisional: boolean;
+  ratingDiff?: number;
   user?: {
     id: string;
     name: string;

@@ -36,14 +36,14 @@ export function mapGameToRow(game: Game) {
     lastMoveAt: game.lastMoveAt,
 
     black_aiLevel: setDefaultValue(blackPlayer.aiLevel),
-    black_rating: mapBooleanToNumber(blackPlayer.rating),
-    black_provisional: mapBooleanToNumber(blackPlayer.provisional),
+    black_rating: blackPlayer.rating,
+    black_ratingDiff: blackPlayer.ratingDiff,
     black_user_id: setDefaultValue(blackPlayer.user?.id),
     black_user_name: setDefaultValue(blackPlayer.user?.name),
 
     white_aiLevel: setDefaultValue(whitePlayer.aiLevel),
-    white_rating: mapBooleanToNumber(whitePlayer.rating),
-    white_provisional: mapBooleanToNumber(whitePlayer.provisional),
+    white_rating: whitePlayer.rating,
+    white_ratingDiff: whitePlayer.ratingDiff,
     white_user_id: setDefaultValue(whitePlayer.user?.id),
     white_user_name: setDefaultValue(whitePlayer.user?.name),
 
@@ -62,8 +62,8 @@ function mapRowToClock(row: any): Clock {
 function mapRowToPlayer(row: any, color: 'black' | 'white'): any {
   const playerData = {
     aiLevel: row[`${color}_aiLevel`],
-    rating: row[`${color}_rating`] === 1,
-    provisional: row[`${color}_provisional`] === 1,
+    rating: row[`${color}_rating`],
+    ratingDiff: row[`${color}_ratingDiff`],
     user: {
       id: row[`${color}_user_id`],
       name: row[`${color}_user_name`],
