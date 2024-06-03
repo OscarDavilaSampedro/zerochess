@@ -80,7 +80,7 @@ export default function GameStatistics({
     <Paper className="paper">
       <Stack>
         <h1 className="h1-margin">Estadísticas de {username}</h1>
-        <Carousel className="carousel">
+        <Carousel className="carousel" animation="slide">
           <Box>
             <h2>Victorias</h2>
             <Stack spacing={2} direction="row" justifyContent="space-evenly">
@@ -147,6 +147,12 @@ export default function GameStatistics({
                   />
                 </Box>
               </Box>
+            </Stack>
+          </Box>
+          <Box>
+            <h2>Errores</h2>
+            <Stack spacing={2} direction="row" justifyContent="space-evenly">
+              TO-DO
             </Stack>
           </Box>
         </Carousel>
