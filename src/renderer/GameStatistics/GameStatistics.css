@@ -1,0 +1,26 @@
+.h1-margin {
+  margin: 0;
+}
+
+.carousel {
+  width: 45em;
+  height: 20em;
+}
+
+.box {
+  text-align: center;
+}
+
+.h3-margin {
+  margin-left: 4.5em;
+}
+
+.paper {
+  padding: 2.5em 3.5em;
+}
+
+.flex-end {
+  display: flex;
+  margin-top: 2.5em;
+  justify-content: flex-end;
+}

@@ -4,6 +4,7 @@ import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
 import StatsPieChart from './StatsPieChart';
 import { BarChart } from '@mui/x-charts';
+import './GameStatistics.css';
 
 export default function GameStatistics({
   games,
@@ -76,61 +77,80 @@ export default function GameStatistics({
   const { keys, values } = parseModeWins();
 
   return (
-    <Paper sx={{ padding: '2.5em 3.5em' }}>
-      <Stack spacing={5}>
-        <h1>Estadísticas de {username}</h1>
-        <Carousel sx={{ width: '60vw' }}>
-          <Stack spacing={2} direction="row" justifyContent="space-evenly">
-            <StatsPieChart
-              data={[
-                {
-                  value: stats.winsAsWhite + stats.winsAsBlack,
-                  color: '#C1E1C1',
-                  label: 'Victorias',
-                },
-                { value: stats.draws, color: '#A7C7E7', label: 'Empates' },
-                { value: stats.losses, color: '#FAA0A0', label: 'Derrotas' },
-              ]}
-            />
-            <StatsPieChart
-              data={[
-                {
-                  value: stats.winsAsWhite,
-                  color: 'white',
-                  label: 'Victorias con blancas',
-                },
-                {
-                  value: stats.winsAsBlack,
-                  color: '#2F4F4F',
-                  label: 'Victorias con negras',
-                },
-              ]}
-            />
-            <StatsPieChart
-              data={[
-                {
-                  value: stats.winsAgainstLowerRating,
-                  color: '#E6E6FA',
-                  label: 'Victorias contra jugadores de menor Elo',
-                },
-                {
-                  value: stats.winsAgainstHigherRating,
-                  color: '#483D8B',
-                  label: 'Victorias contra jugadores de mayor Elo',
-                },
-              ]}
-            />
-            <Box width={200}>
-              <BarChart
-                width={250}
-                height={200}
-                series={[{ data: values }]}
-                xAxis={[{ scaleType: 'band', data: keys }]}
-              />
-            </Box>
-          </Stack>
+    <Paper className="paper">
+      <Stack>
+        <h1 className="h1-margin">Estadísticas de {username}</h1>
+        <Carousel className="carousel">
+          <Box>
+            <h2>Victorias</h2>
+            <Stack spacing={2} direction="row" justifyContent="space-evenly">
+              <Box className="box">
+                <h3>V/E/D</h3>
+                <StatsPieChart
+                  data={[
+                    {
+                      value: stats.winsAsWhite + stats.winsAsBlack,
+                      color: '#C1E1C1',
+                      label: 'Victorias',
+                    },
+                    { value: stats.draws, color: '#A7C7E7', label: 'Empates' },
+                    {
+                      value: stats.losses,
+                      color: '#FAA0A0',
+                      label: 'Derrotas',
+                    },
+                  ]}
+                />
+              </Box>
+              <Box className="box">
+                <h3>Blancas/Negras</h3>
+                <StatsPieChart
+                  data={[
+                    {
+                      value: stats.winsAsWhite,
+                      color: 'white',
+                      label: 'Victorias con blancas',
+                    },
+                    {
+                      value: stats.winsAsBlack,
+                      color: '#2F4F4F',
+                      label: 'Victorias con negras',
+                    },
+                  ]}
+                />
+              </Box>
+              <Box className="box">
+                <h3>-/+ Elo</h3>
+                <StatsPieChart
+                  data={[
+                    {
+                      value: stats.winsAgainstLowerRating,
+                      color: '#E6E6FA',
+                      label: 'Victorias contra jugadores de menor Elo',
+                    },
+                    {
+                      value: stats.winsAgainstHigherRating,
+                      color: '#483D8B',
+                      label: 'Victorias contra jugadores de mayor Elo',
+                    },
+                  ]}
+                />
+              </Box>
+              <Box>
+                <h3 className="h3-margin">Por modo</h3>
+                <Box width={200}>
+                  <BarChart
+                    width={250}
+                    height={200}
+                    series={[{ data: values }]}
+                    xAxis={[{ scaleType: 'band', data: keys }]}
+                  />
+                </Box>
+              </Box>
+            </Stack>
+          </Box>
         </Carousel>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box className="flex-end">
           <Button color="secondary" variant="contained" onClick={handleBack}>
             Atrás
           </Button>
