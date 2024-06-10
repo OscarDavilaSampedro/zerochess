@@ -77,7 +77,7 @@ function calculateWinPercentage(cp: number): number {
 
 function calculateAccuracy(wpBefore: number, wpAfter: number): number {
   const delta = wpBefore - wpAfter;
-  const penaltyFactor = delta**2; // Penalización cuadrática
+  const penaltyFactor = delta > 0 ? delta**1.5 : delta;
   return Math.max(
     0,
     Math.min(
