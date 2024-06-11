@@ -1,9 +1,9 @@
 import { Button, Paper, Stack, Box } from '@mui/material';
+import { Game, GameDecorator } from '../../interfaces';
 import Carousel from 'react-material-ui-carousel';
-import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
 import StatsPieChart from './StatsPieChart';
-import { BarChart } from '@mui/x-charts';
+import StatsBarChart from './StatsBarChart';
 import './GameStatistics.css';
 
 export default function GameStatistics({
@@ -16,56 +16,112 @@ export default function GameStatistics({
   const stats = {
     draws: 0,
     losses: 0,
-    winsAsWhite: 0,
-    winsAsBlack: 0,
+    blunders: 0,
+    mistakes: 0,
+    inaccuracies: 0,
+    whiteWins: 0,
+    blackWins: 0,
+    whiteErrors: 0,
+    blackErrors: 0,
     winsAgainstLowerRating: 0,
     winsAgainstHigherRating: 0,
+    errorsAgainstLowerRating: 0,
+    errorsAgainstHigherRating: 0,
     modeWins: new Map<string, number>(),
+    modeErrors: new Map<string, number>(),
   };
   const navigate = useNavigate();
 
-  games.forEach((gameDecorator) => {
+  const updateMistakes = (
+    game: Game,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined,
+  ) => {
+    const blunders = game.analysis!.blunders[`${playerSide}Player`];
+    const mistakes = game.analysis!.mistakes[`${playerSide}Player`];
+    const inaccuracies = game.analysis!.inaccuracies[`${playerSide}Player`];
+
+    stats.blunders += blunders;
+    stats.mistakes += mistakes;
+    stats.inaccuracies += inaccuracies;
+
+    const totalErrors = blunders + mistakes + inaccuracies;
+    if (playerSide === 'white') {
+      stats.whiteErrors += totalErrors;
+    } else {
+      stats.blackErrors += totalErrors;
+    }
+
+    if (playerRating && opponentRating) {
+      if (playerRating > opponentRating) {
+        stats.errorsAgainstLowerRating += totalErrors;
+      } else {
+        stats.errorsAgainstHigherRating += totalErrors;
+      }
+    }
+
+    const speedErrors = stats.modeErrors.get(game.speed) || 0;
+    stats.modeErrors.set(game.speed, speedErrors + totalErrors);
+  };
+
+  const updateWins = (
+    gameSpeed: string,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined,
+  ) => {
+    if (playerSide === 'white') {
+      stats.whiteWins += 1;
+    } else {
+      stats.blackWins += 1;
+    }
+
+    if (playerRating && opponentRating) {
+      if (playerRating > opponentRating) {
+        stats.winsAgainstLowerRating += 1;
+      } else {
+        stats.winsAgainstHigherRating += 1;
+      }
+    }
+
+    const speedWins = stats.modeWins.get(gameSpeed) || 0;
+    stats.modeWins.set(gameSpeed, speedWins + 1);
+  };
+
+  const updateResults = (
+    game: Game,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined,
+  ) => {
+    if (game.status === 'draw') {
+      stats.draws += 1;
+    } else if (game.winner === playerSide) {
+      updateWins(game.speed, playerSide, playerRating, opponentRating);
+    } else {
+      stats.losses += 1;
+    }
+  };
+
+  const updateStats = (gameDecorator: GameDecorator) => {
     const game = gameDecorator.getGame();
     const playerSide = gameDecorator.getSide(username);
     const opponentSide = gameDecorator.getOpponentSide(username);
 
-    if (game.status === 'draw') {
-      stats.draws += 1;
-    } else if (game.winner === playerSide) {
-      if (playerSide === 'white') {
-        stats.winsAsWhite += 1;
-      } else {
-        stats.winsAsBlack += 1;
-      }
+    const playerRating = game.players[playerSide].rating;
+    const opponentRating = game.players[opponentSide].rating;
 
-      const playerRating = game.players[playerSide].rating;
-      const opponentRating = game.players[opponentSide].rating;
-      if (playerRating && opponentRating) {
-        if (playerRating > opponentRating) {
-          stats.winsAgainstLowerRating += 1;
-        } else {
-          stats.winsAgainstHigherRating += 1;
-        }
-      }
-
-      let speedWins = stats.modeWins.get(game.speed);
-      if (speedWins) {
-        speedWins += 1;
-        stats.modeWins.set(game.speed, speedWins);
-      } else {
-        stats.modeWins.set(game.speed, 1);
-      }
-    } else {
-      stats.losses += 1;
+    if (game.analysis) {
+      updateMistakes(game, playerSide, playerRating, opponentRating);
     }
-  });
-
-  const handleBack = () => {
-    navigate('/games');
+    updateResults(game, playerSide, playerRating, opponentRating);
   };
 
-  function parseModeWins() {
-    const flatArray = Array.from(stats.modeWins);
+  games.forEach(updateStats);
+
+  function parseMap(map: Map<string, number>) {
+    const flatArray = Array.from(map);
     const firstThree = flatArray.sort((a, b) => b[1] - a[1]).slice(0, 3);
 
     const keys = firstThree.map((p) => p[0]);
@@ -74,86 +130,146 @@ export default function GameStatistics({
     return { keys, values };
   }
 
-  const { keys, values } = parseModeWins();
+  const parsedWins = parseMap(stats.modeWins);
+  const parsedErrors = parseMap(stats.modeErrors);
+
+  const handleBack = () => {
+    navigate('/games');
+  };
+
+  const hasErrors = stats.blunders + stats.mistakes + stats.inaccuracies > 0;
 
   return (
     <Paper className="paper">
       <Stack>
         <h1 className="h1-margin">Estadísticas de {username}</h1>
-        <Carousel className="carousel" animation="slide">
+        <Carousel
+          interval={8000}
+          animation="slide"
+          stopAutoPlayOnHover
+          className="carousel"
+        >
           <Box>
             <h2>Victorias</h2>
             <Stack spacing={2} direction="row" justifyContent="space-evenly">
-              <Box className="box">
-                <h3>V/E/D</h3>
-                <StatsPieChart
-                  data={[
-                    {
-                      value: stats.winsAsWhite + stats.winsAsBlack,
-                      color: '#C1E1C1',
-                      label: 'Victorias',
-                    },
-                    { value: stats.draws, color: '#A7C7E7', label: 'Empates' },
-                    {
-                      value: stats.losses,
-                      color: '#FAA0A0',
-                      label: 'Derrotas',
-                    },
-                  ]}
-                />
-              </Box>
-              <Box className="box">
-                <h3>Blancas/Negras</h3>
-                <StatsPieChart
-                  data={[
-                    {
-                      value: stats.winsAsWhite,
-                      color: 'white',
-                      label: 'Victorias con blancas',
-                    },
-                    {
-                      value: stats.winsAsBlack,
-                      color: '#2F4F4F',
-                      label: 'Victorias con negras',
-                    },
-                  ]}
-                />
-              </Box>
-              <Box className="box">
-                <h3>-/+ Elo</h3>
-                <StatsPieChart
-                  data={[
-                    {
-                      value: stats.winsAgainstLowerRating,
-                      color: '#E6E6FA',
-                      label: 'Victorias contra jugadores de menor Elo',
-                    },
-                    {
-                      value: stats.winsAgainstHigherRating,
-                      color: '#483D8B',
-                      label: 'Victorias contra jugadores de mayor Elo',
-                    },
-                  ]}
-                />
-              </Box>
-              <Box>
-                <h3 className="h3-margin">Por modo</h3>
-                <Box width={200}>
-                  <BarChart
-                    width={250}
-                    height={200}
-                    series={[{ data: values }]}
-                    xAxis={[{ scaleType: 'band', data: keys }]}
-                  />
-                </Box>
-              </Box>
+              <StatsPieChart
+                title="V/E/D"
+                data={[
+                  {
+                    value: stats.whiteWins + stats.blackWins,
+                    color: '#C1E1C1',
+                    label: 'Victorias',
+                  },
+                  { value: stats.draws, color: '#A7C7E7', label: 'Empates' },
+                  {
+                    value: stats.losses,
+                    color: '#FAA0A0',
+                    label: 'Derrotas',
+                  },
+                ]}
+              />
+              <StatsPieChart
+                title="Blancas/Negras"
+                data={[
+                  {
+                    value: stats.whiteWins,
+                    color: 'white',
+                    label: 'Victorias con blancas',
+                  },
+                  {
+                    value: stats.blackWins,
+                    color: '#2F4F4F',
+                    label: 'Victorias con negras',
+                  },
+                ]}
+              />
+              <StatsPieChart
+                title="-/+ Elo"
+                data={[
+                  {
+                    value: stats.winsAgainstLowerRating,
+                    color: '#E6E6FA',
+                    label: 'Victorias contra jugadores de menor Elo',
+                  },
+                  {
+                    value: stats.winsAgainstHigherRating,
+                    color: '#483D8B',
+                    label: 'Victorias contra jugadores de mayor Elo',
+                  },
+                ]}
+              />
+              <StatsBarChart
+                title="Por modo"
+                keys={parsedWins.keys}
+                values={parsedWins.values}
+              />
             </Stack>
           </Box>
           <Box>
             <h2>Errores</h2>
-            <Stack spacing={2} direction="row" justifyContent="space-evenly">
-              TO-DO
-            </Stack>
+            {hasErrors ? (
+              <Stack spacing={2} direction="row" justifyContent="space-evenly">
+                <StatsPieChart
+                  title="I/E/EG"
+                  data={[
+                    {
+                      value: stats.inaccuracies,
+                      color: '#FFFAA0',
+                      label: 'Imprecisiones',
+                    },
+                    {
+                      value: stats.mistakes,
+                      color: '#FAC898',
+                      label: 'Errores',
+                    },
+                    {
+                      value: stats.blunders,
+                      color: '#FAA0A0',
+                      label: 'Errores graves',
+                    },
+                  ]}
+                />
+                <StatsPieChart
+                  title="Blancas/Negras"
+                  data={[
+                    {
+                      value: stats.whiteErrors,
+                      color: 'white',
+                      label: 'Errores con blancas',
+                    },
+                    {
+                      value: stats.blackErrors,
+                      color: '#2F4F4F',
+                      label: 'Errores con negras',
+                    },
+                  ]}
+                />
+                <StatsPieChart
+                  title="-/+ Elo"
+                  data={[
+                    {
+                      value: stats.errorsAgainstLowerRating,
+                      color: '#E6E6FA',
+                      label: 'Errores contra jugadores de menor Elo',
+                    },
+                    {
+                      value: stats.errorsAgainstHigherRating,
+                      color: '#483D8B',
+                      label: 'Errores contra jugadores de mayor Elo',
+                    },
+                  ]}
+                />
+                <StatsBarChart
+                  title="Por modo"
+                  keys={parsedErrors.keys}
+                  values={parsedErrors.values}
+                />
+              </Stack>
+            ) : (
+              <Box className="centered-text" sx={{ height: '16em' }}>
+                <p>¡Analiza más partidas!</p>
+              </Box>
+            )}
           </Box>
         </Carousel>
         <Box className="flex-end">

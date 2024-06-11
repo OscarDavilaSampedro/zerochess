@@ -22,10 +22,10 @@ const darkTheme = createTheme({
       paper: '#262421',
     },
     text: {
-      primary: '#bababa',
+      primary: '#BABABA',
     },
     error: {
-      main: '#cc3333',
+      main: '#E79C9C',
     },
   },
   typography: {
@@ -51,11 +51,17 @@ export default function App() {
               />
             }
           />
-          <Route path="/analysis" element={<GameAnalysis />} />
           <Route
             path="/games"
-            element={<GameList games={games} username={username} />}
+            element={
+              <GameList
+                games={games}
+                username={username}
+                onUsernameUpdate={setUsername}
+              />
+            }
           />
+          <Route path="/analysis" element={<GameAnalysis />} />
           <Route
             path="/statistics"
             element={<GameStatistics games={games} username={username} />}

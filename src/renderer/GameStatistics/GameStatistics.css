@@ -24,3 +24,10 @@
   margin-top: 2.5em;
   justify-content: flex-end;
 }
+
+.centered-text {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}

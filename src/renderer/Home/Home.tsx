@@ -22,22 +22,28 @@ export default function Home({
   const [downloading, setDownloading] = useState(false);
   const [homeHelperText, setHomeHelperText] = useState('');
 
-  function showHomeError(isShown: boolean, text?: string) {
-    setHomeHelperText(text || '');
+  function showHomeError(isShown: boolean, text: string = '') {
+    setHomeHelperText(text);
     setHomeError(isShown);
     setDownloading(false);
     setLoading(false);
   }
 
   function showUserGames(games: GameDecorator[]) {
-    const legalGames = games.filter(
-      (g) => g.getGame().variant !== 'fromPosition',
-    );
-    onGamesUpdate(legalGames);
-    navigate('/games');
+    const legalGames = games.filter((d) => {
+      const game = d.getGame();
+      return game.variant !== 'fromPosition' && game.moves;
+    });
 
-    setDownloading(false);
-    setLoading(false);
+    if (legalGames.length > 0) {
+      onGamesUpdate(legalGames);
+      navigate('/games');
+
+      setDownloading(false);
+      setLoading(false);
+    } else {
+      showHomeError(true, 'El usuario no ha jugado partidas válidas');
+    }
   }
 
   function retrieveNewGames(totalGames: number) {

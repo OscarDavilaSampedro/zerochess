@@ -180,7 +180,7 @@ export class GameDecorator {
     return winner === this.getSide(id) ? 'winner' : 'loser';
   }
 
-  updateAnalysis(analysis: { [key: string]: any }) {
+  setAnalysis(analysis: { [key: string]: any }) {
     this.game.analysis = analysis;
   }
 }

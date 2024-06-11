@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
+import { calculateErrors, connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination, Box, TextField, IconButton } from '@mui/material';
 import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
 import { Troubleshoot } from '@mui/icons-material';
@@ -14,9 +14,11 @@ const GAMES_PER_PAGE = 10;
 export default function GameList({
   games,
   username,
+  onUsernameUpdate,
 }: {
   username: string;
   games: GameDecorator[];
+  onUsernameUpdate: (username: string) => void;
 }) {
   const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
@@ -80,10 +82,13 @@ export default function GameList({
   async function analyseGame(game: GameDecorator) {
     const moves = game.getGameMoves();
 
-    const advantage = await getGameAdvantage(moves);
     const accuracy = await getGameAccuracy(moves);
+    const advantage = await getGameAdvantage(moves);
+    const mistakes = calculateErrors(advantage, 1, 1.5);
+    const inaccuracies = calculateErrors(advantage, 0.5, 1);
+    const blunders = calculateErrors(advantage, 1.5, Infinity);
 
-    return { advantage, accuracy };
+    return { advantage, accuracy, mistakes, inaccuracies, blunders };
   }
 
   function updateEstimatedTime(
@@ -115,7 +120,7 @@ export default function GameList({
 
       const analysis = await analyseGame(game);
 
-      game.updateAnalysis(analysis);
+      game.setAnalysis(analysis);
       await window.electron.ipcRenderer.updateGameAnalysis(
         game.getGame().id,
         analysis,
@@ -149,6 +154,7 @@ export default function GameList({
   };
 
   const handleBack = () => {
+    onUsernameUpdate('');
     navigate('/');
   };
 

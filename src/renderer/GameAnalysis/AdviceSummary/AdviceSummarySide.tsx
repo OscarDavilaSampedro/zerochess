@@ -10,29 +10,12 @@ export default function AdviceSummarySide({
   side: string;
   game: GameDecorator;
 }) {
-  const { advantage, accuracy } = game.getGame().analysis!;
-
-  const calculateErrors = (threshold1: number, threshold2: number) => {
-    return advantage.filter((a: number, i: number) => {
-      if (side === 'white') {
-        return (
-          i < advantage.length - 1 &&
-          advantage[i + 1] - a >= threshold1 &&
-          advantage[i + 1] - a < threshold2
-        );
-      }
-      return (
-        i < advantage.length - 1 &&
-        a - advantage[i + 1] >= threshold1 &&
-        a - advantage[i + 1] < threshold2
-      );
-    }).length;
-  };
-
-  const mistakes = calculateErrors(1, 1.5);
-  const inaccuracies = calculateErrors(0.5, 1);
-  const blunders = calculateErrors(1.5, Infinity);
   const Icon = side === 'white' ? Circle : PanoramaFishEye;
+  const { accuracy, inaccuracies, mistakes, blunders } =
+    game.getGame().analysis!;
+  const sideInaccuracies = inaccuracies[`${side}Player`];
+  const sideMistakes = mistakes[`${side}Player`];
+  const sideBlunders = blunders[`${side}Player`];
 
   return (
     <Stack className="stack">
@@ -40,17 +23,17 @@ export default function AdviceSummarySide({
         <Icon sx={{ flex: '0 1 4ch', fontSize: '1.5em' }} />
         <span>{game.parsePlayerName(side)}</span>
       </div>
-      <div className={`row ${inaccuracies > 0 ? 'inaccuracies' : ''}`}>
-        <span>{inaccuracies}</span>
-        <span>{inaccuracies === 1 ? 'imprecisión' : 'imprecisiones'}</span>
+      <div className={`row ${sideInaccuracies > 0 ? 'inaccuracies' : ''}`}>
+        <span>{sideInaccuracies}</span>
+        <span>{sideInaccuracies === 1 ? 'imprecisión' : 'imprecisiones'}</span>
       </div>
-      <div className={`row ${mistakes > 0 ? 'mistakes' : ''}`}>
-        <span>{mistakes}</span>
-        <span>{mistakes === 1 ? 'error' : 'errores'}</span>
+      <div className={`row ${sideMistakes > 0 ? 'mistakes' : ''}`}>
+        <span>{sideMistakes}</span>
+        <span>{sideMistakes === 1 ? 'error' : 'errores'}</span>
       </div>
-      <div className={`row ${blunders > 0 ? 'blunders' : ''}`}>
-        <span>{blunders}</span>
-        <span>{blunders === 1 ? 'error grave' : 'errores graves'}</span>
+      <div className={`row ${sideBlunders > 0 ? 'blunders' : ''}`}>
+        <span>{sideBlunders}</span>
+        <span>{sideBlunders === 1 ? 'error grave' : 'errores graves'}</span>
       </div>
       <div className="row">
         <span>{Math.round(accuracy[`${side}PlayerAverage`])}%</span>
