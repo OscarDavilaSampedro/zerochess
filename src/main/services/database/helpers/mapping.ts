@@ -1,9 +1,5 @@
 import { Clock, Game } from '../../../../interfaces';
 
-function setDefaultValue(value: any) {
-  return value ?? null;
-}
-
 function mapBooleanToNumber(value: boolean) {
   return value ? 1 : 0;
 }
@@ -24,30 +20,29 @@ export function mapGameToRow(game: Game) {
     increment: clock.increment,
     totalTime: clock.totalTime,
 
+    analysis: null,
     perf: game.perf,
     speed: game.speed,
     moves: game.moves,
     source: game.source,
-    rated: mapBooleanToNumber(game.rated),
     status: game.status,
     winner: game.winner,
     variant: game.variant,
     createdAt: game.createdAt,
     lastMoveAt: game.lastMoveAt,
+    rated: mapBooleanToNumber(game.rated),
 
-    black_aiLevel: setDefaultValue(blackPlayer.aiLevel),
     black_rating: blackPlayer.rating,
+    black_aiLevel: blackPlayer.aiLevel,
+    black_user_id: blackPlayer.user?.id,
+    black_user_name: blackPlayer.user?.name,
     black_ratingDiff: blackPlayer.ratingDiff,
-    black_user_id: setDefaultValue(blackPlayer.user?.id),
-    black_user_name: setDefaultValue(blackPlayer.user?.name),
 
-    white_aiLevel: setDefaultValue(whitePlayer.aiLevel),
     white_rating: whitePlayer.rating,
+    white_aiLevel: whitePlayer.aiLevel,
+    white_user_id: whitePlayer.user?.id,
+    white_user_name: whitePlayer.user?.name,
     white_ratingDiff: whitePlayer.ratingDiff,
-    white_user_id: setDefaultValue(whitePlayer.user?.id),
-    white_user_name: setDefaultValue(whitePlayer.user?.name),
-
-    analysis: JSON.stringify(game.analysis),
   };
 }
 
@@ -61,8 +56,8 @@ function mapRowToClock(row: any): Clock {
 
 function mapRowToPlayer(row: any, color: 'black' | 'white'): any {
   const playerData = {
-    aiLevel: row[`${color}_aiLevel`],
     rating: row[`${color}_rating`],
+    aiLevel: row[`${color}_aiLevel`],
     ratingDiff: row[`${color}_ratingDiff`],
     user: {
       id: row[`${color}_user_id`],
@@ -80,8 +75,8 @@ export function mapRowToGame(row: any): Game {
     perf: row.perf,
     speed: row.speed,
     moves: row.moves,
+    rated: row.rated,
     source: row.source,
-    rated: row.rated === 1,
     status: row.status,
     winner: row.winner,
     variant: row.variant,

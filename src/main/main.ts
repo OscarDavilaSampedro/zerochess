@@ -119,7 +119,7 @@ app
   .then(() => {
     ipcMain.handle('engine:joinPath', async (_, pathToJoin) => {
       if (isDebug) {
-      return path.join(__dirname, pathToJoin);
+        return path.join(__dirname, pathToJoin);
       }
       return path.join(
         __dirname.substring(0, __dirname.length - 18),

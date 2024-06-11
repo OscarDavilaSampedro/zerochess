@@ -20,17 +20,9 @@ export function insertGames(games: Game[]) {
   const db = connectDatabase();
   const insertStm = db.prepare(INSERT_GAME);
 
-  const batchSize = 1000;
-  const gameBatches: Game[][] = [];
-  for (let i = 0; i < games.length; i += batchSize) {
-    gameBatches.push(games.slice(i, i + batchSize));
-  }
-
   db.transaction(() => {
-    gameBatches.forEach((batch) => {
-      batch.forEach((game) => {
-        insertStm.run(mapGameToRow(game));
-      });
+    games.forEach((game) => {
+      insertStm.run(mapGameToRow(game));
     });
   })();
 

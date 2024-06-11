@@ -22,7 +22,7 @@ export async function connectEngine() {
   await send('setoption name Use NNUE value true');
 }
 
-function getCentipawns(invert: boolean, nodes: number = 50000) {
+function getCentipawns(invert: boolean, nodes: number = 10000) {
   let latestScore: number | string = 0;
 
   return new Promise<number | string>((resolve) => {
@@ -77,13 +77,10 @@ function calculateWinPercentage(cp: number): number {
 
 function calculateAccuracy(wpBefore: number, wpAfter: number): number {
   const delta = wpBefore - wpAfter;
-  const penaltyFactor = delta > 0 ? delta**1.5 : delta;
+  const penaltyFactor = delta > 0 ? delta ** 2 : delta;
   return Math.max(
     0,
-    Math.min(
-      100,
-      103.1668 * Math.exp(-0.04354 * penaltyFactor) - 3.1669,
-    ),
+    Math.min(100, 103.1668 * Math.exp(-0.04354 * penaltyFactor) - 3.1669),
   );
 }
 
@@ -114,8 +111,8 @@ export async function getGameAccuracy(moves: string[]) {
       whiteCount += 1;
     } else {
       blackSum += calculateAccuracy(
-        100-winPercentagePerNode[i],
-        100-winPercentagePerNode[i + 1],
+        100 - winPercentagePerNode[i],
+        100 - winPercentagePerNode[i + 1],
       );
       blackCount += 1;
     }
@@ -134,4 +131,53 @@ export async function getGameAdvantage(moves: string[]) {
   );
 
   return advantagePerNode;
+}
+
+export function parseAdvantage(advantage: (string | number)[]) {
+  let previousValue = 0;
+
+  const parsedAdvantage = advantage.map((item, index) => {
+    if (typeof item === 'string') {
+      if (!(index > 0 && typeof advantage[index - 1] === 'string')) {
+        const sign = item[1];
+        if (sign === '+') {
+          previousValue += 1;
+        } else if (sign === '-') {
+          previousValue -= 1;
+        }
+      }
+    } else {
+      previousValue = item;
+    }
+
+    return previousValue;
+  });
+
+  return parsedAdvantage;
+}
+
+export function calculateErrors(
+  advantage: (string | number)[],
+  threshold1: number,
+  threshold2: number,
+) {
+  const parsedAdvantage = parseAdvantage(advantage);
+  parsedAdvantage.unshift(0);
+  const errors = {
+    whitePlayer: 0,
+    blackPlayer: 0,
+  };
+
+  for (let i = 0; i < parsedAdvantage.length - 1; i += 1) {
+    const difference = parsedAdvantage[i] - parsedAdvantage[i + 1];
+    if (i % 2 === 0) {
+      if (difference >= threshold1 && difference < threshold2) {
+        errors.whitePlayer += 1;
+      }
+    } else if (-difference >= threshold1 && -difference < threshold2) {
+      errors.blackPlayer += 1;
+    }
+  }
+
+  return errors;
 }
