@@ -144,6 +144,7 @@ export default function GameStatistics({
       <Stack>
         <h1 className="h1-margin">Estadísticas de {username}</h1>
         <Carousel
+          swipe={false}
           interval={8000}
           animation="slide"
           stopAutoPlayOnHover
