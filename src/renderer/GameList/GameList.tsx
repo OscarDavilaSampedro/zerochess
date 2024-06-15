@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { calculateErrors, connectEngine, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
+import { calculateErrors, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination, Box, TextField, IconButton } from '@mui/material';
+import { connectEngine } from '../../main/services/engine/helpers/engine';
 import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
 import { Troubleshoot } from '@mui/icons-material';
 import { GameDecorator } from '../../interfaces';
@@ -182,7 +183,7 @@ export default function GameList({
               onChange={(e) => handleSearchTermChange(e.target.value)}
             />
             <Stack spacing={5} sx={{ height: '2.3em' }} direction="row">
-              <IconButton onClick={handleStatistics}>
+              <IconButton aria-label="statistics" onClick={handleStatistics}>
                 <Troubleshoot />
               </IconButton>
               <Button fullWidth variant="contained" onClick={handleToggleAll}>

@@ -154,14 +154,14 @@ export default function GameStatistics({
             <h2>Victorias</h2>
             <Stack spacing={2} direction="row" justifyContent="space-evenly">
               <StatsPieChart
-                title="V/E/D"
+                title="V/T/D"
                 data={[
                   {
                     value: stats.whiteWins + stats.blackWins,
                     color: '#C1E1C1',
                     label: 'Victorias',
                   },
-                  { value: stats.draws, color: '#A7C7E7', label: 'Empates' },
+                  { value: stats.draws, color: '#A7C7E7', label: 'Tablas' },
                   {
                     value: stats.losses,
                     color: '#FAA0A0',

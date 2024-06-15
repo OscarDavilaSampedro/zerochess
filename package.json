@@ -92,6 +92,7 @@
       "release/app/dist",
       ".erb/dll"
     ],
+    "testTimeout": 20000,
     "transform": {
       "\\.(ts|tsx|js|jsx)$": "ts-jest"
     }
@@ -134,6 +135,7 @@
     "@types/webpack-bundle-analyzer": "^4.6.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
+    "axios-mock-adapter": "^1.22.0",
     "browserslist-config-erb": "^0.0.3",
     "chalk": "^4.1.2",
     "concurrently": "^8.2.1",
