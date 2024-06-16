@@ -92,7 +92,6 @@
       "release/app/dist",
       ".erb/dll"
     ],
-    "testTimeout": 20000,
     "transform": {
       "\\.(ts|tsx|js|jsx)$": "ts-jest"
     }
