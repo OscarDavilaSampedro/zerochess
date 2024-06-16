@@ -243,9 +243,9 @@
     },
     "extraResources": [
       "./assets/**",
-      "./src/main/services/engine/helpers/stockfish.js",
-      "./src/main/services/engine/helpers/stockfish.wasm",
-      "./src/main/services/engine/helpers/nn-5af11540bbfe.nnue"
+      "./src/main/services/engine/helpers/stockfish/stockfish.js",
+      "./src/main/services/engine/helpers/stockfish/stockfish.wasm",
+      "./src/main/services/engine/helpers/stockfish/nn-5af11540bbfe.nnue"
     ],
     "publish": {
       "provider": "github",

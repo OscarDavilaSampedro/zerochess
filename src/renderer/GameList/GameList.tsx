@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { calculateErrors, getGameAccuracy, getGameAdvantage } from '../../main/services/engine/engineService';
 import { Paper, List, Button, Stack, Pagination, Box, TextField, IconButton } from '@mui/material';
-import { connectEngine } from '../../main/services/engine/helpers/engine';
+import { connectEngine, disconnectEngine } from '../../main/services/engine/helpers/engine';
 import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
 import { Troubleshoot } from '@mui/icons-material';
 import { GameDecorator } from '../../interfaces';
@@ -135,6 +135,7 @@ export default function GameList({
       updateEstimatedTime(i, totalTime, totalGames);
     }
 
+    disconnectEngine();
     setChecked([]);
   }
 

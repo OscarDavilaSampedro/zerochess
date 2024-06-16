@@ -142,9 +142,7 @@ describe('Home component', () => {
       fireEvent.click(importButton);
     });
 
-    const errorText = screen.getByText(
-      'El usuario no ha jugado partidas válidas',
-    );
+    const errorText = screen.getByText('El usuario no ha jugado partidas válidas');
     expect(errorText).toBeInTheDocument();
   });
 

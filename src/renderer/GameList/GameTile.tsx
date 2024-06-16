@@ -35,7 +35,7 @@ export default function GameTile({
 
   return (
     <ListItem key={rawGame.id}>
-      <ListItemButton aria-label='gameTile' onClick={handleClick}>
+      <ListItemButton aria-label="gameTile" onClick={handleClick}>
         <ListItemIcon>
           <Chessboard
             boardWidth={210}

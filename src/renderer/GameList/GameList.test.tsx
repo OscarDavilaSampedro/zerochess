@@ -51,6 +51,7 @@ jest.mock('../../main/services/engine/engineService', () => ({
 
 const connectEngineMock = jest.fn();
 jest.mock('../../main/services/engine/helpers/engine', () => ({
+  disconnectEngine: () => jest.fn(),
   connectEngine: () => connectEngineMock(),
 }));
 
@@ -191,6 +192,7 @@ describe('GameList Component', () => {
     );
 
     const searchInput = screen.getByLabelText(/Buscar por nombre del rival/i);
+
     fireEvent.change(searchInput, { target: { value: 'playerC' } });
 
     const gameList = screen.getAllByRole('list')[0];

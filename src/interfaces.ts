@@ -38,17 +38,17 @@ export interface Game {
 
 export interface Engine {
   started: number;
-  loaded?: boolean;
   ready?: boolean;
+  loaded?: boolean;
+  quit: () => void;
+  stop_moves: () => void;
+  get_cue_len: () => number;
   stream?: (data: string) => void;
   send: (
     cmd: string,
     cb?: (response: string) => void,
     stream?: (response: string) => void,
   ) => void;
-  stop_moves: () => void;
-  get_cue_len: () => number;
-  quit: () => void;
 }
 
 export class GameDecorator {

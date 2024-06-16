@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MoveTable from './MoveTable';
 
-const moves = ['Move 1', 'Move 2', 'Move 3', 'Move 4'];
+const moves = ['e4', 'e5', 'Nf3', 'Nc6'];
 const advantage = [1, -1, 2, -2];
 const currentIndex = 1;
 
@@ -18,7 +18,9 @@ describe('MoveTable component', () => {
         currentIndex={currentIndex}
       />,
     );
+
     const rows = screen.getAllByRole('row');
+
     expect(rows).toHaveLength(moves.length / 2);
   });
 
@@ -31,14 +33,13 @@ describe('MoveTable component', () => {
       />,
     );
 
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('Move 1')).toBeInTheDocument();
+    expect(screen.getByText(moves[0])).toBeInTheDocument();
     expect(screen.getByText('+1.0')).toBeInTheDocument();
-    expect(screen.getByText('Move 2')).toBeInTheDocument();
+    expect(screen.getByText(moves[1])).toBeInTheDocument();
     expect(screen.getByText('-1.0')).toBeInTheDocument();
-    expect(screen.getByText('Move 3')).toBeInTheDocument();
+    expect(screen.getByText(moves[2])).toBeInTheDocument();
     expect(screen.getByText('+2.0')).toBeInTheDocument();
-    expect(screen.getByText('Move 4')).toBeInTheDocument();
+    expect(screen.getByText(moves[3])).toBeInTheDocument();
     expect(screen.getByText('-2.0')).toBeInTheDocument();
   });
 
@@ -51,8 +52,7 @@ describe('MoveTable component', () => {
       />,
     );
 
-    const cells = screen.getAllByRole('cell');
-    const currentCell = cells[1];
+    const currentCell = screen.getAllByRole('cell')[1];
 
     expect(currentCell).toHaveStyle({
       color: 'black',

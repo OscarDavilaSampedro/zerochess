@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-
 import { getGameCentipawns } from './helpers/engine';
 
 function calculateWinPercentage(cp: number): number {

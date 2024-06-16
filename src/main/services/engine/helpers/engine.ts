@@ -21,6 +21,10 @@ export async function connectEngine() {
   await send('setoption name Use NNUE value true');
 }
 
+export function disconnectEngine() {
+  engine.quit();
+}
+
 function getCentipawns(invert: boolean, nodes: number = 10000) {
   let latestScore: number | string = 0;
 
