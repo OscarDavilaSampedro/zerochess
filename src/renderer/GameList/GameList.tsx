@@ -33,6 +33,17 @@ export default function GameList({
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
+    const savedPage = localStorage.getItem('currentPage');
+    const savedSearchTerm = localStorage.getItem('searchTerm');
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
+    if (savedSearchTerm) {
+      setSearchTerm(savedSearchTerm);
+    }
+  }, []);
+
+  useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = 0;
     }
@@ -69,6 +80,8 @@ export default function GameList({
   const handleSearchTermChange = (newValue: string) => {
     setSearchTerm(newValue);
     setCurrentPage(1);
+    localStorage.setItem('searchTerm', newValue);
+    localStorage.setItem('currentPage', '1');
   };
 
   const filteredGames = games.filter((game) => {
@@ -86,6 +99,7 @@ export default function GameList({
 
   const handlePageChange = (_event: ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
+    localStorage.setItem('currentPage', page.toString());
   };
 
   async function analyseGame(game: GameDecorator) {
@@ -165,6 +179,10 @@ export default function GameList({
 
   const handleBack = () => {
     onUsernameUpdate('');
+    setCurrentPage(1);
+    setSearchTerm('');
+    localStorage.setItem('currentPage', '1');
+    localStorage.setItem('searchTerm', '');
     navigate('/');
   };
 
