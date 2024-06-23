@@ -33,13 +33,13 @@ export default function GameList({
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    const savedPage = localStorage.getItem('currentPage');
     const savedSearchTerm = localStorage.getItem('searchTerm');
-    if (savedPage) {
-      setCurrentPage(parseInt(savedPage, 10));
-    }
+    const savedPage = localStorage.getItem('currentPage');
     if (savedSearchTerm) {
       setSearchTerm(savedSearchTerm);
+    }
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
     }
   }, []);
 
@@ -47,7 +47,7 @@ export default function GameList({
     if (listRef.current) {
       listRef.current.scrollTop = 0;
     }
-  }, [currentPage, searchTerm]);
+  }, [searchTerm, currentPage]);
 
   const handleToggleAll = () => {
     if (allChecked) {
@@ -179,10 +179,10 @@ export default function GameList({
 
   const handleBack = () => {
     onUsernameUpdate('');
-    setCurrentPage(1);
     setSearchTerm('');
-    localStorage.setItem('currentPage', '1');
+    setCurrentPage(1);
     localStorage.setItem('searchTerm', '');
+    localStorage.setItem('currentPage', '1');
     navigate('/');
   };
 
