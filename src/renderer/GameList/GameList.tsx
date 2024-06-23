@@ -3,10 +3,10 @@ import { calculateErrors, getGameAccuracy, getGameAdvantage } from '../../main/s
 import { Paper, List, Button, Stack, Pagination, Box, TextField, IconButton } from '@mui/material';
 import { connectEngine, disconnectEngine } from '../../main/services/engine/helpers/engine';
 import LinearProgressWithLabel from '../Home/LinearProgressWithLabel';
+import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import { Troubleshoot } from '@mui/icons-material';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
-import { ChangeEvent, useState } from 'react';
 import GameTile from './GameTile';
 import './GameList.css';
 
@@ -29,6 +29,14 @@ export default function GameList({
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [currentPage, searchTerm]);
 
   const handleToggleAll = () => {
     if (allChecked) {
@@ -191,7 +199,7 @@ export default function GameList({
                 Seleccionar todas
               </Button>
             </Stack>
-            <List sx={{ maxHeight: '45vh', overflow: 'auto' }}>
+            <List ref={listRef} sx={{ maxHeight: '45vh', overflow: 'auto' }}>
               {currentGames.map((game) => (
                 <GameTile
                   game={game}
@@ -206,6 +214,7 @@ export default function GameList({
             <Pagination
               showLastButton
               showFirstButton
+              page={currentPage}
               count={totalPages}
               onChange={handlePageChange}
               sx={{ alignSelf: 'center' }}

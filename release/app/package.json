@@ -1,12 +1,11 @@
 {
   "name": "zero-chess",
   "version": "1.0.0",
-  "description": "A foundation for scalable desktop apps",
+  "description": "Sistema de análisis de precisión en partidas de ajedrez",
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Óscar Davila Sampedro",
+    "email": "oscardavilasampedro@gmail.com"
   },
   "main": "./dist/main/main.js",
   "scripts": {

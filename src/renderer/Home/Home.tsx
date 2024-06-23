@@ -42,7 +42,7 @@ export default function Home({
       setDownloading(false);
       setLoading(false);
     } else {
-      showHomeError(true, 'El usuario no ha jugado partidas válidas');
+      showHomeError(true, 'El usuario no ha jugado partidas válidas.');
     }
   }
 
