@@ -3,7 +3,7 @@ import LinearProgressWithLabel from './LinearProgressWithLabel';
 import { checkPlayer, handleGameStream } from '../../http';
 import { GameDecorator } from '../../interfaces';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import './Home.css';
 
 export default function Home({
@@ -23,6 +23,10 @@ export default function Home({
   const [homeHelperText, setHomeHelperText] = useState('');
 
   function showHomeError(isShown: boolean, text: string = '') {
+    if (isShown) {
+      onUsernameUpdate('');
+    }
+
     setHomeHelperText(text);
     setHomeError(isShown);
     setDownloading(false);
@@ -97,10 +101,11 @@ export default function Home({
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     showHomeError(false);
 
-    if (username !== '') {
+    if (!/^\s*$/.test(username)) {
       verifyPlayer();
     } else {
       showHomeError(true, 'Ingrese un nombre de usuario.');
@@ -122,20 +127,24 @@ export default function Home({
         </Box>
       ) : (
         <Paper sx={{ padding: '2.5em 3.5em' }}>
-          <Stack spacing={5}>
-            <h1>Importar partidas:</h1>
-            <TextField
-              required
-              size="small"
-              error={homeError}
-              label="Nombre de usuario"
-              helperText={homeHelperText}
-              onChange={(e) => onUsernameUpdate(e.target.value.toLowerCase())}
-            />
-            <Button variant="contained" onClick={handleSubmit}>
-              Importar partidas
-            </Button>
-          </Stack>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={5}>
+              <h1>Importar partidas:</h1>
+              <TextField
+                required
+                size="small"
+                error={homeError}
+                label="Nombre de usuario"
+                helperText={homeHelperText}
+                onChange={(e) =>
+                  onUsernameUpdate(e.target.value.toLowerCase().trim())
+                }
+              />
+              <Button variant="contained" type="submit">
+                Importar partidas
+              </Button>
+            </Stack>
+          </form>
         </Paper>
       )}
     </Box>

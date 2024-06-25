@@ -41,8 +41,8 @@ export default function GameTile({
             boardWidth={210}
             arePiecesDraggable={false}
             position={game.parsePosition()}
-            customBoardStyle={{ borderRadius: '5px' }}
             boardOrientation={game.getSide(username)}
+            customBoardStyle={{ borderRadius: '5px' }}
           />
           {rawGame.analysis ? (
             <IconButton disableRipple sx={{ margin: '0 1em 0' }}>

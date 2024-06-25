@@ -61,11 +61,13 @@ describe('Home component', () => {
   it('should show error if username field is empty', async () => {
     render(<MockedApp />);
 
+    const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
     const importButton = screen.getByRole('button', {
       name: /Importar partidas/i,
     });
 
     await act(async () => {
+      fireEvent.change(usernameInput, { target: { value: ' ' } });
       fireEvent.click(importButton);
     });
 
@@ -142,7 +144,9 @@ describe('Home component', () => {
       fireEvent.click(importButton);
     });
 
-    const errorText = screen.getByText('El usuario no ha jugado partidas válidas.');
+    const errorText = screen.getByText(
+      'El usuario no ha jugado partidas válidas.',
+    );
     expect(errorText).toBeInTheDocument();
   });
 
