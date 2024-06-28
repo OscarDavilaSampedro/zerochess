@@ -18,11 +18,11 @@ export default function GameStatistics({
     losses: 0,
     blunders: 0,
     mistakes: 0,
-    inaccuracies: 0,
     whiteWins: 0,
     blackWins: 0,
     whiteErrors: 0,
     blackErrors: 0,
+    inaccuracies: 0,
     winsAgainstLowerRating: 0,
     winsAgainstHigherRating: 0,
     errorsAgainstLowerRating: 0,
@@ -30,7 +30,6 @@ export default function GameStatistics({
     modeWins: new Map<string, number>(),
     modeErrors: new Map<string, number>(),
   };
-  const navigate = useNavigate();
 
   const updateMistakes = (
     game: Game,
@@ -133,6 +132,7 @@ export default function GameStatistics({
   const parsedWins = parseMap(stats.modeWins);
   const parsedErrors = parseMap(stats.modeErrors);
 
+  const navigate = useNavigate();
   const handleBack = () => {
     navigate('/games');
   };

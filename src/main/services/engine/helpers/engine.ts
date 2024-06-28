@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import loadEngine from './stockfish/load_engine';
 import { Engine } from '../../../../interfaces';
 import { Chess } from 'chess.js';

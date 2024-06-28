@@ -1,4 +1,4 @@
-import { Clock, Game } from '../../../../interfaces';
+import { Clock, Game, Player } from '../../../../interfaces';
 
 function mapBooleanToNumber(value: boolean) {
   return value ? 1 : 0;
@@ -54,7 +54,7 @@ function mapRowToClock(row: any): Clock {
   };
 }
 
-function mapRowToPlayer(row: any, color: 'black' | 'white'): any {
+function mapRowToPlayer(row: any, color: 'black' | 'white'): Player {
   const playerData = {
     rating: row[`${color}_rating`],
     aiLevel: row[`${color}_aiLevel`],

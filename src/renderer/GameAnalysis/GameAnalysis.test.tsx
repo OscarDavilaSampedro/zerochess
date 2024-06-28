@@ -52,7 +52,7 @@ describe('MoveTable component', () => {
       />,
     );
 
-    const currentCell = screen.getAllByRole('cell')[1];
+    const currentCell = screen.getAllByRole('cell')[currentIndex];
 
     expect(currentCell).toHaveStyle({
       color: 'black',

@@ -137,7 +137,7 @@ describe('GameList Component', () => {
     });
   });
 
-  it('should analyse selected games', async () => {
+  it('should analyse selected games and display them as such', async () => {
     render(
       <GameList games={games} username="" onUsernameUpdate={() => undefined} />,
     );

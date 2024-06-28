@@ -33,4 +33,4 @@ npm-debug.log.*
 !.erb
 
 # stockfish.js
-src/main/services/engine/helpers
+src/main/services/engine/helpers/stockfish

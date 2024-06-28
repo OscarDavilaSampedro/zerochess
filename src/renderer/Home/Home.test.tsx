@@ -58,7 +58,7 @@ describe('Home component', () => {
     expect(headingElement).toBeInTheDocument();
   });
 
-  it('should show error if username field is empty', async () => {
+  it('should show an error if trying to import games from an blank user', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -75,7 +75,7 @@ describe('Home component', () => {
     expect(errorText).toBeInTheDocument();
   });
 
-  it('should show error if user does not exist', async () => {
+  it('should show an error if trying to import games from a non-existent user', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -86,7 +86,7 @@ describe('Home component', () => {
     mockAxios.onGet('https://lichess.org/api/user/testuser').reply(404);
 
     await act(async () => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+      fireEvent.change(usernameInput, { target: { value: 'testUser' } });
       fireEvent.click(importButton);
     });
 
@@ -94,7 +94,7 @@ describe('Home component', () => {
     expect(errorText).toBeInTheDocument();
   });
 
-  it('should show error if user has not played games', async () => {
+  it('should show an error if trying to import games from a user who has not played games', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -117,7 +117,7 @@ describe('Home component', () => {
     expect(errorText).toBeInTheDocument();
   });
 
-  it('should show error if user has not played valid games', async () => {
+  it('should show an error if trying to import games from a user who has not played valid games', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -140,7 +140,7 @@ describe('Home component', () => {
     handleGameStreamMock.mockResolvedValueOnce(gamesResponse);
 
     await act(async () => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+      fireEvent.change(usernameInput, { target: { value: 'testUser' } });
       fireEvent.click(importButton);
     });
 
@@ -150,7 +150,7 @@ describe('Home component', () => {
     expect(errorText).toBeInTheDocument();
   });
 
-  it('should download and import games when new games are available', async () => {
+  it('should download and import games from Lichess when new ones are available', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -170,14 +170,14 @@ describe('Home component', () => {
     handleGameStreamMock.mockResolvedValueOnce(gamesResponse);
 
     await act(async () => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+      fireEvent.change(usernameInput, { target: { value: 'testUser' } });
       fireEvent.click(importButton);
     });
 
     expect(useNavigateMock).toHaveBeenCalledWith('/games');
   });
 
-  it('should load games from database if already present', async () => {
+  it('should load and import games from database if already present', async () => {
     render(<MockedApp />);
 
     const usernameInput = screen.getByLabelText(/Nombre de usuario/i);
@@ -192,7 +192,7 @@ describe('Home component', () => {
     });
 
     await act(async () => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+      fireEvent.change(usernameInput, { target: { value: 'testUser' } });
       fireEvent.click(importButton);
     });
 

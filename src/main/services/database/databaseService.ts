@@ -34,7 +34,7 @@ export function getPlayerGames(id: string) {
   const stm = db.prepare(SELECT_GAME_BY_USER_ID);
 
   const rows = stm.all({ id });
-  const games: Game[] = rows.map(mapRowToGame);
+  const games = rows.map(mapRowToGame);
 
   db.close();
   return games;

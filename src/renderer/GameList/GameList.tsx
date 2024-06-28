@@ -26,11 +26,10 @@ export default function GameList({
   const [allChecked, setAllChecked] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const listRef = useRef<HTMLUListElement>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
-
-  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const savedSearchTerm = localStorage.getItem('searchTerm');
@@ -179,10 +178,9 @@ export default function GameList({
 
   const handleBack = () => {
     onUsernameUpdate('');
-    setSearchTerm('');
-    setCurrentPage(1);
     localStorage.setItem('searchTerm', '');
     localStorage.setItem('currentPage', '1');
+
     navigate('/');
   };
 

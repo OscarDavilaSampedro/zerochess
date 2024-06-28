@@ -77,7 +77,9 @@ var load_engine = (function () {
         args.unshift('--experimental-wasm-simd');
       }
     }
-    engine = await window.electron.ipcRenderer.spawnChildProcess(path, args, { stdio: 'pipe' });
+    engine = await window.electron.ipcRenderer.spawnChildProcess(path, args, {
+      stdio: 'pipe',
+    });
 
     engine.stdout.on('data', echo);
 
@@ -108,10 +110,7 @@ var load_engine = (function () {
       typeof global !== 'undefined' &&
       Object.prototype.toString.call(global.process) === '[object process]'
     ) {
-      return spawn_worker(
-        path,
-        options,
-      );
+      return spawn_worker(path, options);
     }
 
     path = path || 'stockfish.js';

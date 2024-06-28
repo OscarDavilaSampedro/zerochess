@@ -18,8 +18,8 @@ export interface Player {
 
 export interface Game {
   id: string;
-  clock?: Clock;
   perf: string;
+  clock?: Clock;
   speed: string;
   moves: string;
   source: string;
@@ -58,16 +58,29 @@ export class GameDecorator {
     this.game = game;
   }
 
-  parsePosition(): string {
-    const chess = new Chess();
+  getGame(): Game {
+    return this.game;
+  }
 
-    try {
-      chess.loadPgn(this.game.moves);
-    } catch (e: unknown) {
-      console.error(e as Error);
+  getGameMoves(): string[] {
+    return this.getGame().moves.split(' ');
+  }
+
+  getOpponentSide(id: string) {
+    return this.getSide(id) === 'black' ? 'white' : 'black';
+  }
+
+  getSide(id: string) {
+    return this.game.players.black.user?.id === id ? 'black' : 'white';
+  }
+
+  getStatusColor(id: string) {
+    const { winner, status } = this.game;
+    if (status === 'draw') {
+      return '';
     }
 
-    return chess.fen();
+    return winner === this.getSide(id) ? 'winner' : 'loser';
   }
 
   parseGameClock(): string {
@@ -81,29 +94,29 @@ export class GameDecorator {
     return result;
   }
 
-  parsePlayerName(playerStr: string): string {
-    let player: Player;
-    if (playerStr === 'black') {
-      player = this.game.players.black;
-    } else {
-      player = this.game.players.white;
-    }
-
-    if (player.aiLevel) {
-      return `Stockfish nivel ${player.aiLevel}`;
-    }
-    if (!player.user || !player.user.id) {
-      return 'Anónimo';
-    }
-
-    return player.user!.name;
-  }
-
   private parseGameLoser(): string {
     let result = 'Las negras';
 
     if (this.game.winner === 'black') {
       result = 'Las blancas';
+    }
+
+    return result;
+  }
+
+  parseGameMoves(): string {
+    const movesArray = this.game.moves.split(' ');
+    let result = '';
+
+    let turn = 1;
+    for (let i = 0; i < movesArray.length && turn < 4; i += 2, turn += 1) {
+      const secondMove = movesArray[i + 1] ? movesArray[i + 1] : '';
+      result += `${turn}. ${movesArray[i]} ${secondMove} `;
+    }
+
+    const numberOfMoves = Math.ceil(movesArray.length / 2);
+    if (numberOfMoves > 3) {
+      result += `... ${Math.ceil(movesArray.length / 2)} movimientos`;
     }
 
     return result;
@@ -137,47 +150,34 @@ export class GameDecorator {
     return winner === 'black' ? ' • Las negras ganan' : ' • Las blancas ganan';
   }
 
-  parseGameMoves(): string {
-    const movesArray = this.game.moves.split(' ');
-    let result = '';
-
-    let turn = 1;
-    for (let i = 0; i < movesArray.length && turn < 4; i += 2, turn += 1) {
-      const secondMove = movesArray[i + 1] ? movesArray[i + 1] : '';
-      result += `${turn}. ${movesArray[i]} ${secondMove} `;
+  parsePlayerName(playerStr: string): string {
+    let player: Player;
+    if (playerStr === 'black') {
+      player = this.game.players.black;
+    } else {
+      player = this.game.players.white;
     }
 
-    const numberOfMoves = Math.ceil(movesArray.length / 2);
-    if (numberOfMoves > 3) {
-      result += `... ${Math.ceil(movesArray.length / 2)} movimientos`;
+    if (player.aiLevel) {
+      return `Stockfish nivel ${player.aiLevel}`;
+    }
+    if (!player.user || !player.user.id) {
+      return 'Anónimo';
     }
 
-    return result;
+    return player.user!.name;
   }
 
-  getGame(): Game {
-    return this.game;
-  }
+  parsePosition(): string {
+    const chess = new Chess();
 
-  getGameMoves(): string[] {
-    return this.getGame().moves.split(' ');
-  }
-
-  getSide(id: string) {
-    return this.game.players.black.user?.id === id ? 'black' : 'white';
-  }
-
-  getOpponentSide(id: string) {
-    return this.game.players.black.user?.id === id ? 'white' : 'black';
-  }
-
-  getStatusColor(id: string) {
-    const { winner, status } = this.game;
-    if (status === 'draw') {
-      return '';
+    try {
+      chess.loadPgn(this.game.moves);
+    } catch (e) {
+      console.error(e as Error);
     }
 
-    return winner === this.getSide(id) ? 'winner' : 'loser';
+    return chess.fen();
   }
 
   setAnalysis(analysis: { [key: string]: any }) {

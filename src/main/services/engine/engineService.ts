@@ -1,10 +1,10 @@
 import { getGameCentipawns } from './helpers/engine';
 
-function calculateWinPercentage(cp: number): number {
+function calculateWinPercentage(cp: number) {
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 }
 
-function calculateAccuracy(wpBefore: number, wpAfter: number): number {
+function calculateAccuracy(wpBefore: number, wpAfter: number) {
   const delta = wpBefore - wpAfter;
   const penaltyFactor = delta > 0 ? delta ** 2 : delta;
   return Math.max(

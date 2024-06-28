@@ -31,16 +31,16 @@ export async function checkPlayer(username: string): Promise<CheckResult> {
 
 const readStream =
   (
+    totalGames: number,
     processLine: (line: Game) => void,
     updateProgress: (progress: number) => void,
-    totalGames: number,
   ) =>
   (response: Response) => {
     const stream = response.body!.getReader();
-    const matcher = /\r?\n/;
     const decoder = new TextDecoder();
-    let buf = '';
+    const matcher = /\r?\n/;
     let processedGames = 0;
+    let buf = '';
 
     const loop = (): Promise<unknown> =>
       stream.read().then(({ done, value }) => {
@@ -58,6 +58,7 @@ const readStream =
             .filter((p) => p)
             .forEach((i) => {
               processLine(JSON.parse(i));
+
               processedGames += 1;
               updateProgress((processedGames / totalGames) * 100);
             });
@@ -72,8 +73,8 @@ const readStream =
 
 export function handleGameStream(
   username: string,
-  updateProgress: (progress: number) => void,
   totalGames: number,
+  updateProgress: (progress: number) => void,
 ): Promise<Game[]> {
   const stream = fetch(`https://lichess.org/api/games/user/${username}`, {
     headers: { Accept: 'application/x-ndjson' },
@@ -87,7 +88,7 @@ export function handleGameStream(
     const onComplete = () => resolve(games);
 
     stream
-      .then(readStream(onMessage, updateProgress, totalGames))
+      .then(readStream(totalGames, onMessage, updateProgress))
       .then(onComplete)
       .catch(onError);
   });

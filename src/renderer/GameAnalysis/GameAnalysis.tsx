@@ -1,10 +1,10 @@
 import { FastForwardRounded, FastRewindRounded, SkipNextRounded, SkipPreviousRounded } from '@mui/icons-material';
 import { Box, Button, Grid, IconButton, Paper, Stack } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import AdviceSummary from './AdviceSummary/AdviceSummary';
 import { GameDecorator } from '../../interfaces';
 import { Chessboard } from 'react-chessboard';
 import AdvantageChart from './AdvantageChart';
-import AdviceSummary from './AdviceSummary/AdviceSummary';
 import MoveTable from './MoveTable';
 import { Chess } from 'chess.js';
 import { useState } from 'react';
@@ -28,8 +28,8 @@ export default function GameAnalysis() {
     for (let i = 0; i < index; i += 1) {
       chess.move(moves[i]);
     }
-    setBoardPosition(chess.fen());
 
+    setBoardPosition(chess.fen());
     setCurrentIndex(index);
   }
 

@@ -34,13 +34,13 @@ export default function Home({
   }
 
   function showUserGames(games: GameDecorator[]) {
-    const legalGames = games.filter((d) => {
+    const validGames = games.filter((d) => {
       const game = d.getGame();
       return game.variant !== 'fromPosition' && game.moves;
     });
 
-    if (legalGames.length > 0) {
-      onGamesUpdate(legalGames);
+    if (validGames.length > 0) {
+      onGamesUpdate(validGames);
       navigate('/games');
 
       setDownloading(false);
@@ -51,7 +51,7 @@ export default function Home({
   }
 
   function retrieveNewGames(totalGames: number) {
-    handleGameStream(username, setProgress, totalGames)
+    handleGameStream(username, totalGames, setProgress)
       .then((games) => {
         window.electron.ipcRenderer.insertGames(games);
         showUserGames(games.map((game) => new GameDecorator(game)));
@@ -96,7 +96,7 @@ export default function Home({
       } else {
         showHomeError(true, 'El usuario introducido no existe.');
       }
-    } catch (error) {
+    } catch (_e) {
       showHomeError(true, 'Hubo un error al verificar el usuario.');
     }
   }

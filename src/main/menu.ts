@@ -43,7 +43,7 @@ export default class MenuBuilder {
 
       Menu.buildFromTemplate([
         {
-          label: 'Inspect element',
+          label: 'Inspeccionar elemento',
           click: () => {
             this.mainWindow.webContents.inspectElement(x, y);
           },
@@ -57,26 +57,26 @@ export default class MenuBuilder {
       label: 'Electron',
       submenu: [
         {
-          label: 'About ZeroChess',
+          label: 'Acerca de ZeroChess',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ZeroChess',
+          label: 'Ocultar ZeroChess',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
         {
-          label: 'Hide Others',
+          label: 'Ocultar otras',
           accelerator: 'Command+Shift+H',
           selector: 'hideOtherApplications:',
         },
-        { label: 'Show All', selector: 'unhideAllApplications:' },
+        { label: 'Mostrar todas', selector: 'unhideAllApplications:' },
         { type: 'separator' },
         {
-          label: 'Quit',
+          label: 'Cerrar',
           accelerator: 'Command+Q',
           click: () => {
             app.quit();
@@ -111,7 +111,7 @@ export default class MenuBuilder {
           },
         },
         {
-          label: 'Alternar Pantalla Completa',
+          label: 'Alternar pantalla completa',
           accelerator: 'Ctrl+Command+F',
           click: () => {
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
@@ -130,7 +130,7 @@ export default class MenuBuilder {
       label: 'Vista',
       submenu: [
         {
-          label: 'Alternar Pantalla Completa',
+          label: 'Alternar pantalla completa',
           accelerator: 'Ctrl+Command+F',
           click: () => {
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
@@ -152,7 +152,7 @@ export default class MenuBuilder {
           selector: 'performClose:',
         },
         { type: 'separator' },
-        { label: 'Bring All to Front', selector: 'arrangeInFront:' },
+        { label: 'Traer todo al frente', selector: 'arrangeInFront:' },
       ],
     };
     const subMenuHelp: MenuItemConstructorOptions = {
@@ -206,7 +206,7 @@ export default class MenuBuilder {
                   },
                 },
                 {
-                  label: 'Alternar &Pantalla Completa',
+                  label: 'Alternar &pantalla completa',
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
@@ -224,7 +224,7 @@ export default class MenuBuilder {
               ]
             : [
                 {
-                  label: 'Alternar &Pantalla Completa',
+                  label: 'Alternar &pantalla completa',
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
