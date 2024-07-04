@@ -162,7 +162,7 @@ export default class MenuBuilder {
           label: 'Documentación',
           click() {
             shell.openExternal(
-              'https://github.com/electron/electron/tree/main/docs#readme',
+              'https://1drv.ms/b/c/cb31d45b236b2d51/ESpMzeV9t_1NredfiYzRwpIB0gorbY09fY4T13bmadokMQ?e=nglI2j',
             );
           },
         },
@@ -241,7 +241,7 @@ export default class MenuBuilder {
             label: 'Documentación',
             click() {
               shell.openExternal(
-                'https://github.com/electron/electron/tree/main/docs#readme',
+                'https://1drv.ms/b/c/cb31d45b236b2d51/ESpMzeV9t_1NredfiYzRwpIB0gorbY09fY4T13bmadokMQ?e=nglI2j',
               );
             },
           },
