@@ -26,7 +26,7 @@ export default function MoveTable({
     if (currentIndex === 0) {
       cellIndex += 1;
     }
-    if (currentIndex === moves.length) {
+    if (currentIndex === moves.length && currentIndex % 2 === 0) {
       cellIndex += -1;
     }
 
