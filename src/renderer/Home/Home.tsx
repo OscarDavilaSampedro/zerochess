@@ -50,18 +50,29 @@ export default function Home({
     }
   }
 
-  function retrieveNewGames(totalGames: number) {
-    handleGameStream(username, totalGames, setProgress)
-      .then((games) => {
-        window.electron.ipcRenderer.insertGames(games);
-        showUserGames(games.map((game) => new GameDecorator(game)));
+async function retrieveNewGames(totalGames: number) {
+  try {
+    const newGames = await handleGameStream(username, totalGames, setProgress);
+    const oldGames = await window.electron.ipcRenderer.getPlayerGames(username);
 
-        return games;
-      })
-      .catch(() =>
-        showHomeError(true, 'Hubo un error al cargar las partidas.'),
+    await window.electron.ipcRenderer.insertGames(newGames);
+
+    const filteredOldGames = oldGames.filter((game) => game.analysis);
+
+    let combinedGames = newGames;
+    if (filteredOldGames.length > 0) {
+      const oldGamesMap = new Map(
+        filteredOldGames.map((game) => [game.id, game]),
       );
+      combinedGames = newGames.map((game) => oldGamesMap.get(game.id) || game);
+    }
+
+    const decoratedGames = combinedGames.map((game) => new GameDecorator(game));
+    showUserGames(decoratedGames);
+  } catch (error) {
+    showHomeError(true, 'Hubo un error al cargar las partidas.');
   }
+}
 
   async function retrieveOldGames() {
     showUserGames(

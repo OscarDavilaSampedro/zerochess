@@ -1,5 +1,10 @@
+export const SELECT_GAME_BY_ID = `
+  SELECT * FROM game WHERE id = @id
+`;
+
 export const SELECT_GAME_BY_USER_ID = `
   SELECT * FROM game WHERE black_user_id = @id OR white_user_id = @id
+  ORDER BY createdAt DESC
 `;
 
 export const COUNT_GAMES_BY_USER_ID = `

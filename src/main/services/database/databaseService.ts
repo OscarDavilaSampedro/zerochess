@@ -1,4 +1,4 @@
-import { COUNT_GAMES_BY_USER_ID, CREATE_GAME_TABLE, INSERT_GAME, SELECT_GAME_BY_USER_ID, UPDATE_GAME_ANALYSIS } from './helpers/queries';
+import { INSERT_GAME, CREATE_GAME_TABLE, SELECT_GAME_BY_ID, UPDATE_GAME_ANALYSIS, SELECT_GAME_BY_USER_ID, COUNT_GAMES_BY_USER_ID } from './helpers/queries';
 import { mapGameToRow, mapRowToGame } from './helpers/mapping';
 import { Game } from '../../../interfaces';
 import Database from 'better-sqlite3';
@@ -19,10 +19,14 @@ function connectDatabase() {
 export function insertGames(games: Game[]) {
   const db = connectDatabase();
   const insertStm = db.prepare(INSERT_GAME);
+  const checkStm = db.prepare(SELECT_GAME_BY_ID);
 
   db.transaction(() => {
     games.forEach((game) => {
-      insertStm.run(mapGameToRow(game));
+      const existingGame = checkStm.get({ id: game.id });
+      if (!existingGame) {
+        insertStm.run(mapGameToRow(game));
+      }
     });
   })();
 
