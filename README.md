@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![GitHub Tag](https://img.shields.io/github/v/tag/OscarDavilaSampedro/zerochess?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/releases/latest)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/OscarDavilaSampedro/zerochess/test.yml?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/actions/workflows/test.yml)
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/blob/main/LICENSE)
+[![GitHub Tag](https://img.shields.io/github/v/tag/OscarDavilaSampedro/zerochess?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/releases/latest)
 
 </div>
 

@@ -1,3 +1,5 @@
+/* eslint-disable lines-between-class-members */
+/* eslint-disable max-classes-per-file */
 import { Chess } from 'chess.js';
 
 export interface Clock {
@@ -182,5 +184,113 @@ export class GameDecorator {
 
   setAnalysis(analysis: { [key: string]: any }) {
     this.game.analysis = analysis;
+  }
+}
+
+export class GameStats {
+  draws = 0;
+  losses = 0;
+  blunders = 0;
+  mistakes = 0;
+  whiteWins = 0;
+  blackWins = 0;
+  whiteErrors = 0;
+  blackErrors = 0;
+  inaccuracies = 0;
+  winsAgainstLowerRating = 0;
+  winsAgainstHigherRating = 0;
+  errorsAgainstLowerRating = 0;
+  errorsAgainstHigherRating = 0;
+  modeWins = new Map<string, number>();
+  modeErrors = new Map<string, number>();
+
+  updateMistakes(
+    game: Game,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined
+  ) {
+    const blunders = game.analysis!.blunders[`${playerSide}Player`];
+    const mistakes = game.analysis!.mistakes[`${playerSide}Player`];
+    const inaccuracies = game.analysis!.inaccuracies[`${playerSide}Player`];
+
+    this.blunders += blunders;
+    this.mistakes += mistakes;
+    this.inaccuracies += inaccuracies;
+
+    const totalErrors = blunders + mistakes + inaccuracies;
+    if (playerSide === 'white') {
+      this.whiteErrors += totalErrors;
+    } else {
+      this.blackErrors += totalErrors;
+    }
+
+    if (playerRating && opponentRating) {
+      if (playerRating > opponentRating) {
+        this.errorsAgainstLowerRating += totalErrors;
+      } else {
+        this.errorsAgainstHigherRating += totalErrors;
+      }
+    }
+
+    const speedErrors = this.modeErrors.get(game.speed) || 0;
+    this.modeErrors.set(game.speed, speedErrors + totalErrors);
+  }
+
+  updateWins(
+    gameSpeed: string,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined
+  ) {
+    if (playerSide === 'white') {
+      this.whiteWins += 1;
+    } else {
+      this.blackWins += 1;
+    }
+
+    if (playerRating && opponentRating) {
+      if (playerRating > opponentRating) {
+        this.winsAgainstLowerRating += 1;
+      } else {
+        this.winsAgainstHigherRating += 1;
+      }
+    }
+
+    const speedWins = this.modeWins.get(gameSpeed) || 0;
+    this.modeWins.set(gameSpeed, speedWins + 1);
+  }
+
+  updateResults(
+    game: Game,
+    playerSide: string,
+    playerRating: number | undefined,
+    opponentRating: number | undefined
+  ) {
+    if (game.status === 'draw') {
+      this.draws += 1;
+    } else if (game.winner === playerSide) {
+      this.updateWins(game.speed, playerSide, playerRating, opponentRating);
+    } else {
+      this.losses += 1;
+    }
+  }
+
+  static parseMap(map: Map<string, number>) {
+    const flatArray = Array.from(map);
+    const firstThree = flatArray.sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+    const keys = firstThree.map((p) => p[0]);
+    const values = firstThree.map((p) => p[1]);
+
+    return { keys, values };
+  }
+
+  getParsedWins() {
+    return GameStats.parseMap(this.modeWins);
+  }
+
+  getParsedErrors() {
+    return GameStats.parseMap(this.modeErrors);
   }
 }

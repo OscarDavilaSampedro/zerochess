@@ -1,5 +1,5 @@
+import { GameDecorator, GameStats } from '../../interfaces';
 import { Button, Paper, Stack, Box } from '@mui/material';
-import { Game, GameDecorator } from '../../interfaces';
 import Carousel from 'react-material-ui-carousel';
 import { useNavigate } from 'react-router-dom';
 import StatsPieChart from './StatsPieChart';
@@ -13,95 +13,7 @@ export default function GameStatistics({
   username: string;
   games: GameDecorator[];
 }) {
-  const stats = {
-    draws: 0,
-    losses: 0,
-    blunders: 0,
-    mistakes: 0,
-    whiteWins: 0,
-    blackWins: 0,
-    whiteErrors: 0,
-    blackErrors: 0,
-    inaccuracies: 0,
-    winsAgainstLowerRating: 0,
-    winsAgainstHigherRating: 0,
-    errorsAgainstLowerRating: 0,
-    errorsAgainstHigherRating: 0,
-    modeWins: new Map<string, number>(),
-    modeErrors: new Map<string, number>(),
-  };
-
-  const updateMistakes = (
-    game: Game,
-    playerSide: string,
-    playerRating: number | undefined,
-    opponentRating: number | undefined,
-  ) => {
-    const blunders = game.analysis!.blunders[`${playerSide}Player`];
-    const mistakes = game.analysis!.mistakes[`${playerSide}Player`];
-    const inaccuracies = game.analysis!.inaccuracies[`${playerSide}Player`];
-
-    stats.blunders += blunders;
-    stats.mistakes += mistakes;
-    stats.inaccuracies += inaccuracies;
-
-    const totalErrors = blunders + mistakes + inaccuracies;
-    if (playerSide === 'white') {
-      stats.whiteErrors += totalErrors;
-    } else {
-      stats.blackErrors += totalErrors;
-    }
-
-    if (playerRating && opponentRating) {
-      if (playerRating > opponentRating) {
-        stats.errorsAgainstLowerRating += totalErrors;
-      } else {
-        stats.errorsAgainstHigherRating += totalErrors;
-      }
-    }
-
-    const speedErrors = stats.modeErrors.get(game.speed) || 0;
-    stats.modeErrors.set(game.speed, speedErrors + totalErrors);
-  };
-
-  const updateWins = (
-    gameSpeed: string,
-    playerSide: string,
-    playerRating: number | undefined,
-    opponentRating: number | undefined,
-  ) => {
-    if (playerSide === 'white') {
-      stats.whiteWins += 1;
-    } else {
-      stats.blackWins += 1;
-    }
-
-    if (playerRating && opponentRating) {
-      if (playerRating > opponentRating) {
-        stats.winsAgainstLowerRating += 1;
-      } else {
-        stats.winsAgainstHigherRating += 1;
-      }
-    }
-
-    const speedWins = stats.modeWins.get(gameSpeed) || 0;
-    stats.modeWins.set(gameSpeed, speedWins + 1);
-  };
-
-  const updateResults = (
-    game: Game,
-    playerSide: string,
-    playerRating: number | undefined,
-    opponentRating: number | undefined,
-  ) => {
-    if (game.status === 'draw') {
-      stats.draws += 1;
-    } else if (game.winner === playerSide) {
-      updateWins(game.speed, playerSide, playerRating, opponentRating);
-    } else {
-      stats.losses += 1;
-    }
-  };
+  const stats = new GameStats();
 
   const updateStats = (gameDecorator: GameDecorator) => {
     const game = gameDecorator.getGame();
@@ -112,25 +24,15 @@ export default function GameStatistics({
     const opponentRating = game.players[opponentSide].rating;
 
     if (game.analysis) {
-      updateMistakes(game, playerSide, playerRating, opponentRating);
+      stats.updateMistakes(game, playerSide, playerRating, opponentRating);
     }
-    updateResults(game, playerSide, playerRating, opponentRating);
+    stats.updateResults(game, playerSide, playerRating, opponentRating);
   };
 
   games.forEach(updateStats);
 
-  function parseMap(map: Map<string, number>) {
-    const flatArray = Array.from(map);
-    const firstThree = flatArray.sort((a, b) => b[1] - a[1]).slice(0, 3);
-
-    const keys = firstThree.map((p) => p[0]);
-    const values = firstThree.map((p) => p[1]);
-
-    return { keys, values };
-  }
-
-  const parsedWins = parseMap(stats.modeWins);
-  const parsedErrors = parseMap(stats.modeErrors);
+  const parsedWins = stats.getParsedWins();
+  const parsedErrors = stats.getParsedErrors();
 
   const navigate = useNavigate();
   const handleBack = () => {
