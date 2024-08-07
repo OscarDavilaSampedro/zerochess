@@ -1,17 +1,12 @@
-![ZeroChess](/assets/images/zc-banner.png)
+# ZeroChess
 
-<div align="center">
+[![Build][build-badge]][build-link]
+[![License][license-badge]][license-link]
+[![Release][release-badge]][release-link]
 
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/OscarDavilaSampedro/zerochess/test.yml?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/actions/workflows/test.yml)
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/blob/main/LICENSE)
-[![GitHub Tag](https://img.shields.io/github/v/tag/OscarDavilaSampedro/zerochess?style=for-the-badge)](https://github.com/OscarDavilaSampedro/zerochess/releases/latest)
+This desktop application is designed to analyze the accuracy of chess moves by evaluating games imported from the Lichess online platform using the open-source Stockfish engine.
 
-</div>
-
-## Overview
-
-<p align="justify"><b>ZeroChess</b> is a <b>desktop application</b> designed to analyze the accuracy of <b>chess moves</b> by evaluating games imported from the <b>Lichess</b> online platform using the <b>open-source Stockfish engine.</b></p>
-<p align="justify">The analysis provides insights into performance across various <b>game rhythms</b>, against different types of <b>opponents</b>, and when playing as specific <b>pieces</b>, among other <b>detailed statistics.</b></p>
+The analysis provides insights into performance across various game rhythms, against different types of opponents, and when playing as specific pieces, among other detailed statistics.
 
 ## Installation
 
@@ -23,7 +18,7 @@ To set up ZeroChess, clone the repository and install dependencies:
   npm install
 ```
 
-## Starting Development
+## Starting development
 
 To start the application in the development environment, use:
 
@@ -31,7 +26,7 @@ To start the application in the development environment, use:
   npm start
 ```
 
-## Packaging for Production
+## Packaging for production
 
 To package the application for your local platform, run:
 
@@ -39,7 +34,18 @@ To package the application for your local platform, run:
   npm run package
 ```
 
+## Author
+
+- [@OscarDavilaSampedro](https://github.com/OscarDavilaSampedro)
+
 ## License
 
-<p align="justify">ZeroChess is distributed under the <a href="https://opensource.org/license/mit">MIT License</a>. This means you are free to use, modify, and distribute the software in nearly any way you like, including selling it or using it as a foundation for other projects.</p>
-<p align="justify">The primary requirement is that you must include the original license when distributing ZeroChess. While sharing any modifications to the source code is encouraged, it is not required.</p>
+This work is licensed under a [MIT License][license-link].
+
+[build-link]: https://github.com/OscarDavilaSampedro/zerochess/actions/workflows/test.yml
+[license-link]: https://github.com/OscarDavilaSampedro/zerochess/blob/main/LICENSE
+[release-link]: https://github.com/OscarDavilaSampedro/zerochess/releases/latest
+
+[build-badge]: https://img.shields.io/github/actions/workflow/status/OscarDavilaSampedro/zerochess/test.yml?&style=for-the-badge&label=ZeroChess&logo=github
+[license-badge]: https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge&color=success
+[release-badge]: https://img.shields.io/github/v/tag/OscarDavilaSampedro/zerochess?style=for-the-badge&label=latest%20release
