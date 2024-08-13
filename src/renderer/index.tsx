@@ -1,4 +1,4 @@
-import es from 'javascript-time-ago/locale/es.json';
+import es from 'javascript-time-ago/locale/es';
 import { createRoot } from 'react-dom/client';
 import TimeAgo from 'javascript-time-ago';
 import App from './App';
