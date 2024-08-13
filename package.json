@@ -81,7 +81,7 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.6",
     "@mui/x-charts": "^7.2.0",
-    "axios": "^1.6.7",
+    "axios": "^1.7.4",
     "chess.js": "^1.0.0-beta.7",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
