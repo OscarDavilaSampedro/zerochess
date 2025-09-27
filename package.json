@@ -228,7 +228,7 @@
       "./src/main/services/engine/helpers/stockfish/nn-5af11540bbfe.nnue"
     ]
   },
-  "devEngines": {
+  "engines": {
     "node": ">=14.x",
     "npm": ">=7.x"
   },
